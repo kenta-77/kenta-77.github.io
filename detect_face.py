@@ -1,9 +1,16 @@
 import cv2
 
 class DetectFace() :
-    """Face detection for a image """
+    """
+    Face detection for a image
 
-    cascade_path = "./Mosaic_app/haarcascade_frontalface_default.xml"
+    画像から顔検出を行う
+    複数の顔を検出可能
+    テストを実行すると選択領域を囲んで表示する
+    resourceフォルダを作成してOpencv公式のhaarcascade_frontalface_default.xmlをおいて使用
+    """
+
+    cascade_path = "./resource/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(cascade_path)
     def __init__(self) :
         self.image_file = ""
@@ -21,7 +28,6 @@ class DetectFace() :
 
         detect_faces = self.face_cascade.detectMultiScale(image_gray)
 
-        print(detect_faces)
         #矩形描画テスト
         rect_image = self.write_rectangle(detect_faces, image)
 
@@ -31,7 +37,7 @@ class DetectFace() :
 
 if __name__ == '__main__' :
     detect_test = DetectFace()
-    detect_test.image_file = "./Mosaic_app/many_face_test.jpg"
+    detect_test.image_file = "./resource/test.jpg"
     detect_test.detect_face()
 
 
