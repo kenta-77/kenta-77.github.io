@@ -20,7 +20,8 @@ class DetectFace() :
         self.mosaic_ratio = 0.2
         self.post_process_mode = "mosaic"
 
-        self.detected_faces =  list()
+        self.detected_faces = list()
+        self.selected_faces = list()
         self.image = cv2.imread(self.image_file)
         if self.image is None :
             print("Image Load Error")
@@ -29,15 +30,21 @@ class DetectFace() :
     def detect_face(self) :
         image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.detected_faces = self.face_cascade.detectMultiScale(image_gray)
+        if not self.detected_faces :
+            print("No face detected from select image")
+        else :
+            self.selected_faces = [True] * len(self.detect_faces)
 
     def write_rectangle(self) :
-        for x, y, w, h in self.detected_faces :
-            cv2.rectangle(self.image, (x, y), (x+w, y+h), (255, 255, 255), 2)
+        for i, face_area in enumerate(self.detected_faces) :
+            if self.selected_faces[i] :
+                cv2.rectangle(self.image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
     
     def mosaic_face(self) :
-        for x, y, w, h in self.detected_faces :
-            small_image = cv2.resize(self.image[y:y+h, x:x+w], None, fx = self.mosaic_ratio, fy = self.mosaic_ratio, interpolation = cv2.INTER_NEAREST)
-            self.image[y:y+h, x:x+w] = cv2.resize(small_image, (w,h), interpolation = cv2.INTER_NEAREST) 
+        for i, face_area in enumerate(self.detected_faces) :
+            if self.selected_faces[i] :
+                small_image = cv2.resize(self.image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]], None, fx = self.mosaic_ratio, fy = self.mosaic_ratio, interpolation = cv2.INTER_NEAREST)
+                self.image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]] = cv2.resize(small_image, tuple(face_area[2:4]), interpolation = cv2.INTER_NEAREST) 
 
     def post_process(self) :
         if self.post_process_mode == "rectangle" :
@@ -50,6 +57,9 @@ class DetectFace() :
         
         cv2.imshow(f"test_result mode{self.post_process_mode}", self.image)
         cv2.waitKey(0)
+    
+    def select_faces(self, number) :
+        self.selected_faces[number] = False
 
 if __name__ == '__main__' :
     detect_test = DetectFace("./resource/test.jpg")
