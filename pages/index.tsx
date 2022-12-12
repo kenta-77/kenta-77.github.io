@@ -1,8 +1,8 @@
-import './input.module.scss';
+import styled from './input.module.scss';
 import React, { useState } from 'react';
 
 
-function MainPage() {
+export default function MainPage() {
   // useState()で画像のパスを保持
   // ※デフォルトで表示する画像を初期値で指定(この例ではpublicフォルダのdefault-profile.pngを指定)
   const [profileImage, setProfileImage] = useState('default-profile.png');
@@ -14,14 +14,23 @@ function MainPage() {
     const fileObject = e.target.files[0];
     // オブジェクトURLを生成し、useState()を更新
     setProfileImage(window.URL.createObjectURL(fileObject));
-  };
+  }
 
   return (
-    <div className="flex justify-center items-center mt-8">
-      <img src={profileImage} className="h-32 w-32 rounded-full" />
-      <input type="file" accept="image/*" onChange={onFileInputChange} className="pl-4" />
-    </div>
+	<>
+		<h1 className={styled.heading}>モザイク処理</h1>
+    	<div className={styled.inputArea}>
+      		<input 
+				type="file" 
+	  			accept="image/*" 
+				onChange={onFileInputChange} 
+				className={styled.InputField} />
+		</div>
+		<div>
+			<img 
+				src={profileImage} 
+				className={styled.heading2} />
+    	</div>
+	</>
   );
-}
-
-export default MainPage;
+};
