@@ -20,7 +20,7 @@ from django.contrib.staticfiles.urls import static #画像参照のため追加
 
 urlpatterns = [
     path("admin/", admin.site.urls), #DBを管理画面で扱う
-    path('mosaic/',include('mosaics.urls')), #mosaic/にアクセスした場合、mosaics.urlsへとルーティング
+    path('mosaics/',include('mosaics.urls')), #mosaic/にアクセスした場合、mosaics.urlsへとルーティング
 ]
 
 if settings.DEBUG:

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     'mosaics',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +60,7 @@ ROOT_URLCONF = "mosaicback.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR/'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,7 +84,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         'NAME': 'DetaBaseName',
         'USER': 'mosaicer',
-        'PASSWORD': '',
+        'PASSWORD': 'MoPos-88er',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -126,5 +127,5 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:5500',
+    'http://127.0.0.1:5501',
 ]

@@ -1,4 +1,6 @@
 from django.db import models
+from PIL import Image
+import io
 
 #DBのMosaicテーブルを作成
 class Mosaic(models.Model):
