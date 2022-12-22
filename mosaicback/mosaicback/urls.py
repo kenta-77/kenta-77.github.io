@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.contrib.staticfiles.urls import static #画像参照のため追加
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls), #DBを管理画面で扱う
+    path('mosaics/',include('mosaics.urls')), #mosaic/にアクセスした場合、mosaics.urlsへとルーティング
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #画像用にpathを指定

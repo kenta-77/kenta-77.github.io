@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Image post</title>
+</head>
+<body>
+  <form id="form" method="POST" action="http://127.0.0.1:8000/mosaics/"  enctype="multipart/form-data">
+    <input type="text" name="title" value="image_name"><br>
+    <input type="file" name="image"><br>
+    <input type="submit" value="送信する" id="submit-button">
+  </form>
+  <input type="button" onclick="callApi()" value="画像表示">
+  <img src=" " id="image01">
+  <script src="test_django.js"></script>
+</body>
+</html>
