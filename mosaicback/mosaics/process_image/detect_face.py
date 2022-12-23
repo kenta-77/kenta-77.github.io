@@ -13,9 +13,9 @@ class DetectFace() :
     smile_faceはmicrosoftのfluent emojiよりassets/Smiling face with smiling eyes/3D/smiling_face_with_smiling_eyes_3d.png をとってきて使う
     """
 
-    cascade_path = "./resource/haarcascade_frontalface_default.xml"
+    cascade_path = "./mosaics/process_image/resource/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(cascade_path)
-    smile_face_path = "./resource/smiling_face_with_smiling_eyes_3d.png"
+    smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
     #pre process
@@ -40,6 +40,7 @@ class DetectFace() :
     def detect_face(self) :
         image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.detected_faces = self.face_cascade.detectMultiScale(image_gray)
+        print(self.detected_faces)
         if self.detected_faces == []:
             print("No face detected from select image")
         else :
@@ -49,7 +50,8 @@ class DetectFace() :
 
     def write_rectangle(self) :
         copy_image = self.image.copy()
-        file_path = self.database_path + "rect_image.jpg"
+        # file_path = self.database_path + "rect_image.jpg"
+        file_path = "./media/results/rect_image.jpg"
         for face_area in self.detected_faces :
             cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
         cv2.imwrite(file_path, copy_image)
@@ -57,7 +59,8 @@ class DetectFace() :
     
     def write_rect_and_number(self) :
         copy_image = self.image.copy()
-        file_path = self.database_path + "number_image.jpg"
+        # file_path = self.database_path + "number_image.jpg"
+        file_path = "./media/results/number_image.jpg"
         for i, face_area in enumerate(self.detected_faces) :
             cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
             cv2.putText(image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2], color = (0,0,255))
@@ -68,7 +71,8 @@ class DetectFace() :
     
     def mosaic_face(self) :
         copy_image = self.image.copy()
-        file_path = self.database_path + "mosaic_image.jpg"
+        # file_path = self.database_path + "mosaic_image.jpg"
+        file_path = "./media/results/mosaic_image.jpg"
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
                 self._fix_mosaic_ratio(face_area[2:4])
@@ -80,7 +84,8 @@ class DetectFace() :
 
     def stamp_smile_face(self) :
         copy_image = self.image.copy()
-        file_path = self.database_path + "stamp_image.jpg" 
+        # file_path = self.database_path + "stamp_image.jpg" 
+        file_path = "./media/results/result.jpg" 
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
                 small_stamp = cv2.resize(self.smile_face_image, tuple(face_area[2:4]), interpolation = cv2.INTER_NEAREST)
@@ -94,8 +99,8 @@ class DetectFace() :
         cv2.imwrite(file_path, copy_image)
         return file_path       
 
-if __name__ == '__main__' :
-    detect_test = DetectFace("./resource/", "test2.jpg")
-    detect_test.detect_face()
-    a = detect_test.write_rectangle()
-    b = detect_test.stamp_smile_face()
+# if __name__ == '__main__' :
+#     detect_test = DetectFace("./resource/", "image_test.jpeg")
+#     detect_test.detect_face()
+#     a = detect_test.write_rectangle()
+#     b = detect_test.stamp_smile_face()
