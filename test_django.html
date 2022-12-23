@@ -6,7 +6,9 @@
 </head>
 <body>
   <form id="form" method="POST" action="http://127.0.0.1:8000/mosaics/"  enctype="multipart/form-data">
-    <input type="text" name="title" value="image_name"><br>
+    <label for="title">画像名：</label>
+    <input type="text" name="title" value="image_name" id="title"><br>
+    <label for="image">画像選択：</label>
     <input type="file" name="image"><br>
     <input type="submit" value="送信する" id="submit-button">
   </form>
