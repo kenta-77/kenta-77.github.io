@@ -9,7 +9,7 @@ import cv2
 from .process_image.detect_face import DetectFace
 import os
 
-@api_view(["GET","POST"])
+@api_view(["GET","POST"]) #GETとPOSTメソッドを受け付ける
 def mosaic_upload(request):
   if request.method == "GET":
     mosaic = Mosaic.objects.latest('id')
