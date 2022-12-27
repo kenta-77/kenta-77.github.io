@@ -19,7 +19,7 @@ def mosaic_upload(request):
     if serializer.is_valid():
       serializer.save() #postデータをDBに登録
       #----モザイク化----#
-      mosaic = Mosaic.objects.get(id=serializer.data["id"]) #送信された画像のidを取得
+      mosaic = Mosaic.objects.get(id=serializer.data["id"]) #送信された画像を取得
       org_path = mosaic.image.url #送信された画像のurlを取得
       # gray_path = str(settings.BASE_DIR) + "/media/results/result.jpg"
       detect_test = DetectFace(str(settings.BASE_DIR), org_path) #モザイククラスのインスタンス作成
