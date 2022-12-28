@@ -11,6 +11,12 @@ class DetectFace() :
     テストを実行すると選択領域を囲んで表示する
     resourceフォルダを作成してOpencv公式のhaarcascade_frontalface_default.xmlをおいて使用
     smile_faceはmicrosoftのfluent emojiよりassets/Smiling face with smiling eyes/3D/smiling_face_with_smiling_eyes_3d.png をとってきて使う
+
+    各パラメータ
+    mosaic_ratio : モザイクの大きさ　０～１で指定　大きすぎる，小さすぎる場合には自動補正される
+    detect_faces : 識別された顔の数のリスト，顔の位置が格納される
+    active_faces : 処理される顔のリスト,Trueで処理実行,Falseで処理しない リストの番号と識別時の顔番号が対応する
+
     """
 
     cascade_path = "./mosaics/process_image/resource/haarcascade_frontalface_default.xml"
@@ -31,12 +37,14 @@ class DetectFace() :
             print("Image Load Error")
             sys.exit(1)
 
+    #モザイクの大きさの自動補正
     def _fix_mosaic_ratio(self, face_size) :
         if face_size[0]*self.mosaic_ratio < 1 or face_size[1]*self.mosaic_ratio < 1 :
             self.mosaic_ratio = max(1/face_size[0], 1/face_size[1])
         if self.mosaic_ratio > 1 :
             self.mosaic_ratio = 1
 
+    #顔検出 検出した顔の数を返す
     def detect_face(self) :
         image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.detected_faces = self.face_cascade.detectMultiScale(image_gray)
@@ -48,6 +56,7 @@ class DetectFace() :
             self.active_faces = [True] * len(self.detected_faces)
         return len(self.detected_faces)
 
+    #顔を囲む四角を描く（番号なし）
     def write_rectangle(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "rect_image.jpg"
@@ -57,6 +66,7 @@ class DetectFace() :
         cv2.imwrite(file_path, copy_image)
         return file_path
     
+    #顔を囲む四角と，顔番号を書く
     def write_rect_and_number(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "number_image.jpg"
@@ -69,6 +79,7 @@ class DetectFace() :
         cv2.imwrite(file_path, copy_image)
         return file_path
     
+    #顔領域にモザイクをかける（active_faces==Trueのみ）
     def mosaic_face(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
@@ -82,6 +93,7 @@ class DetectFace() :
         cv2.imwrite(file_path, copy_image)
         return file_path
 
+    #顔領域にスタンプをつける（active_faces==Trueのみ）
     def stamp_smile_face(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "stamp_image.jpg" 
