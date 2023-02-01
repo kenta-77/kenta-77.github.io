@@ -15,6 +15,7 @@ def mosaic_upload(request):
     serializer = MosaicSerializer(mosaic)
     return Response(serializer.data)
   elif request.method == "POST":
+    print(request.data)
     serializer = MosaicSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save() #postデータをDBに登録
