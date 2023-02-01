@@ -1,0 +1,40 @@
+.heading{
+    font-size: 30px;
+    font-weight: bold;
+}
+.heading2 {
+    font-size: 24px;
+    font-weight: bold;
+  
+    margin-top: 20px;
+  }
+  
+  .md10 {
+    margin-top: 10px;
+  }
+  
+  
+  .inputArea {
+  
+    margin-top: 20px;
+  
+  }
+.flex{
+  display: inline-block;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.item{
+  width:30%;
+  padding: 30px; 
+}
+.main {
+  background-color: #eee;    /* 背景色指定 */
+  padding:  10px;            /* 余白指定 */
+  overflow:  hidden;         /* floatで高さがなくなる問題解消 */
+}
+.main_visual {
+  background-color:  #ccc;    /* 背景色指定 */
+  text-align:  center;        /* 文字中央揃え */
+  padding: 30px;              /* 余白指定 */
+}
