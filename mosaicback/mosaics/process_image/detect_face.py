@@ -22,7 +22,7 @@ class DetectFace() :
     def __init__(self, database_path, image_file) :
         self.database_path = database_path
         self.image_file = image_file
-        self.mosaic_ratio = 1
+        self.mosaic_ratio = 0.1
 
         self.detected_faces = list()
         self.active_faces = list()
@@ -40,7 +40,6 @@ class DetectFace() :
     def detect_face(self) :
         image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.detected_faces = self.face_cascade.detectMultiScale(image_gray)
-        print(self.detected_faces)
         if self.detected_faces == []:
             print("No face detected from select image")
         else :
@@ -63,7 +62,7 @@ class DetectFace() :
         file_path = "./media/results/number_image.jpg"
         for i, face_area in enumerate(self.detected_faces) :
             cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
-            cv2.putText(image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2], color = (0,0,255))
+            cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2], color = (0,0,255))
             print(face_area)
             print(tuple((face_area[0:2]+face_area[2:4])//2))
         cv2.imwrite(file_path, copy_image)
@@ -72,7 +71,7 @@ class DetectFace() :
     def mosaic_face(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
-        file_path = "./media/results/mosaic_image.jpg"
+        file_path = "./media/results/result.jpg" 
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
                 self._fix_mosaic_ratio(face_area[2:4])

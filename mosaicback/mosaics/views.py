@@ -25,7 +25,7 @@ def mosaic_upload(request):
       detect_test = DetectFace(str(settings.BASE_DIR), org_path) #モザイククラスのインスタンス作成
       detect_test.detect_face() #顔検知メソッドを実行
       detect_write = detect_test.write_rectangle() #検知した顔の領域を表示するメソッドを実行
-      detect_stamp = detect_test.stamp_smile_face() #検知した顔にスタンプを表示するメソッドを実行
+      detect_stamp = detect_test.mosaic_face() #検知した顔にスタンプを表示するメソッドを実行
       mosaic.result = "results/result.jpg" #結果画像のurlをDBに登録
       mosaic.save() #変更内容を登録
       serializer = MosaicSerializer(mosaic) #データをシリアライズ
