@@ -19,10 +19,11 @@ class DetectFace() :
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
     #pre process
-    def __init__(self, database_path, image_file) :
+    def __init__(self, database_path, image_file, result_path) :
         self.database_path = database_path
         self.image_file = image_file
         self.mosaic_ratio = 0.1
+        self.result_path = "./media/results/" + str(result_path) + "result.jpg"
 
         self.detected_faces = list()
         self.active_faces = list()
@@ -71,7 +72,7 @@ class DetectFace() :
     def mosaic_face(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
-        file_path = "./media/results/result.jpg" 
+        file_path = self.result_path 
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
                 self._fix_mosaic_ratio(face_area[2:4])
@@ -84,7 +85,7 @@ class DetectFace() :
     def stamp_smile_face(self) :
         copy_image = self.image.copy()
         # file_path = self.database_path + "stamp_image.jpg" 
-        file_path = "./media/results/result.jpg" 
+        file_path = self.result_path 
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
                 small_stamp = cv2.resize(self.smile_face_image, tuple(face_area[2:4]), interpolation = cv2.INTER_NEAREST)
