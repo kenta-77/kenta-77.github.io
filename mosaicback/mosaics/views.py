@@ -25,15 +25,18 @@ def mosaic_upload(request):
         for p in glob.glob('./media/images/*',recursive=True):
           if os.path.isfile(p):
             os.remove(p)
+        for i in glob.glob('./media/results/*',recursive=True):
+          if os.path.isfile(i):
+            os.remove(i)
         serializer.save() #postデータをDBに登録
       #----モザイク化----#
       mosaic = Mosaic.objects.get(id=serializer.data["id"]) #送信された画像を取得
       org_path = mosaic.image.url #送信された画像のurlを取得
       result_path = mosaic.id #送信された画像のidを取得
-      detect_test = DetectFace(str(settings.BASE_DIR), org_path, result_path) #モザイククラスのインスタンス作成
+      detect_test = DetectFace(str(settings.BASE_DIR), org_path, result_path, float(mosaic.strength)) #モザイククラスのインスタンス作成
       detect_test.detect_face() #顔検知メソッドを実行
       detect_write = detect_test.write_rectangle() #検知した顔の領域を表示するメソッドを実行
-      print(mosaic.mosaic_type)
+      detect_write = detect_test.write_rect_and_number() #検知した顔の領域を表示するメソッドを実行
       if int(mosaic.mosaic_type) == 1:
         detect_stamp = detect_test.mosaic_face() #検知した顔にモザイクを表示するメソッドを実行
       elif int(mosaic.mosaic_type) == 2:

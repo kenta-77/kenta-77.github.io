@@ -19,10 +19,10 @@ class DetectFace() :
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
     #pre process
-    def __init__(self, database_path, image_file, result_path) :
+    def __init__(self, database_path, image_file, result_path, mosaic_ratio) :
         self.database_path = database_path
         self.image_file = image_file
-        self.mosaic_ratio = 0.1
+        self.mosaic_ratio = mosaic_ratio
         self.result_path = "./media/results/" + str(result_path) + "result.jpg"
 
         self.detected_faces = list()
@@ -63,7 +63,8 @@ class DetectFace() :
         file_path = "./media/results/number_image.jpg"
         for i, face_area in enumerate(self.detected_faces) :
             cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
-            cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2], color = (0,0,255))
+            cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2],thickness=10, color = (0,0,0)) #輪郭文字の貼り付け
+            cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2],thickness=2, color = (255,255,255)) #内側文字の貼り付け
             print(face_area)
             print(tuple((face_area[0:2]+face_area[2:4])//2))
         cv2.imwrite(file_path, copy_image)
