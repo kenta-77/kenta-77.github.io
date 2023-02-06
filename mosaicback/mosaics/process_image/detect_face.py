@@ -19,14 +19,24 @@ class DetectFace() :
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
     #pre process
-    def __init__(self, database_path, image_file, result_path, mosaic_ratio) :
+    def __init__(self, database_path, image_file, result_path, mosaic_ratio, rect_number = '') :
         self.database_path = database_path
         self.image_file = image_file
         self.mosaic_ratio = mosaic_ratio
         self.result_path = "./media/results/" + str(result_path) + "result.jpg"
+        self.rect_path = "./media/rectangles/" + str(result_path) + "rect_number.jpg"
+
+        self.active_person = []
+        for i in range(len(rect_number)):
+            if rect_number[i] == ',':
+                continue
+            else:
+                self.active_person.append(rect_number[i])
+        print(self.active_person)
 
         self.detected_faces = list()
         self.active_faces = list()
+        self.active_number = 0
         self.image = cv2.imread(self.database_path+self.image_file)
         if self.image is None :
             print("Image Load Error")
@@ -59,18 +69,22 @@ class DetectFace() :
     
     def write_rect_and_number(self) :
         copy_image = self.image.copy()
+        for i in range(len(self.active_faces)):
+            self.active_number += 1
         # file_path = self.database_path + "number_image.jpg"
-        file_path = "./media/results/number_image.jpg"
+        file_path = self.rect_path
         for i, face_area in enumerate(self.detected_faces) :
             cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
             cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2],thickness=10, color = (0,0,0)) #輪郭文字の貼り付け
             cv2.putText(copy_image, str(i+1), (face_area[0], face_area[1]+face_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*face_area[2],thickness=2, color = (255,255,255)) #内側文字の貼り付け
-            print(face_area)
-            print(tuple((face_area[0:2]+face_area[2:4])//2))
+            # print(face_area)
+            # print(tuple((face_area[0:2]+face_area[2:4])//2))
         cv2.imwrite(file_path, copy_image)
-        return file_path
+        return self.active_number
     
     def mosaic_face(self) :
+        for i in self.active_person:
+            self.active_faces[int(i)] = False
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
         file_path = self.result_path 
