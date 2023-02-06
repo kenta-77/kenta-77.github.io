@@ -13,7 +13,7 @@ class DetectFace() :
     smile_faceはmicrosoftのfluent emojiよりassets/Smiling face with smiling eyes/3D/smiling_face_with_smiling_eyes_3d.png をとってきて使う
 
     各パラメータ
-    mosaic_ratio : モザイクの大きさ　０～１で指定　大きすぎる，小さすぎる場合には自動補正される
+    mosaic_ratio : モザイクの大きさ ０～１で指定 大きすぎる，小さすぎる場合には自動補正される
     detect_faces : 識別された顔の数のリスト，顔の位置が格納される
     active_faces : 処理される顔のリスト,Trueで処理実行,Falseで処理しない リストの番号と識別時の顔番号が対応する
 
@@ -50,8 +50,10 @@ class DetectFace() :
 
     #モザイクの大きさの自動補正
     def _fix_mosaic_ratio(self, face_size) :
+        #最もモザイクの目が粗い(1pixelまで縮小)　
         if face_size[0]*self.mosaic_ratio < 1 or face_size[1]*self.mosaic_ratio < 1 :
             self.mosaic_ratio = max(1/face_size[0], 1/face_size[1])
+        #最もモザイクの目が細かい(縮小を行わない、倍率1)
         if self.mosaic_ratio > 1 :
             self.mosaic_ratio = 1
 
@@ -65,6 +67,16 @@ class DetectFace() :
             self.detected_faces = sorted(self.detected_faces, key= lambda x : (x[0], x[1]))
             self.active_faces = [True] * len(self.detected_faces)
         return len(self.detected_faces)
+
+    #最も荒いモザイクの目を計算する(顔領域の最も長い辺を探す)
+    def calc_min_mosaic_ratio(self) :
+        longest_side = 1
+        for face_area in self.detect_faces :
+            long_side = max(face_area[2], face_area[3])
+            longest_side = max(longest_side, long_side)
+        min_mosaic_ratio = 1/longest_side
+        return min_mosaic_ratio
+
 
     #顔を囲む四角を描く（番号なし）
     def write_rectangle(self) :
