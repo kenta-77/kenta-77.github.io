@@ -13,7 +13,7 @@ class DetectFace() :
     smile_faceはmicrosoftのfluent emojiよりassets/Smiling face with smiling eyes/3D/smiling_face_with_smiling_eyes_3d.png をとってきて使う
 
     各パラメータ
-    mosaic_ratio : モザイクの大きさ ０～１で指定 大きすぎる，小さすぎる場合には自動補正される
+    mosaic_size : モザイクの大きさ 1以上で指定 大きすぎる，小さすぎる場合には自動補正される
     detect_faces : 識別された顔の数のリスト，顔の位置が格納される
     active_faces : 処理される顔のリスト,Trueで処理実行,Falseで処理しない リストの番号と識別時の顔番号が対応する
 
@@ -25,10 +25,10 @@ class DetectFace() :
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
     #pre process
-    def __init__(self, database_path, image_file, result_path, mosaic_ratio, rect_number = '') :
+    def __init__(self, database_path, image_file, result_path, mosaic_size, rect_number = '') :
         self.database_path = database_path
         self.image_file = image_file
-        self.mosaic_ratio = mosaic_ratio
+        self.mosaic_size = mosaic_size
         self.result_path = "./media/results/" + str(result_path) + "result.jpg"
         self.rect_path = "./media/rectangles/" + str(result_path) + "rect_number.jpg"
 
@@ -50,12 +50,14 @@ class DetectFace() :
 
     #モザイクの大きさの自動補正
     def _fix_mosaic_ratio(self, face_size) :
+        mosaic_ratio = 1/self.mosaic_size
         #最もモザイクの目が粗い(1pixelまで縮小)　
-        if face_size[0]*self.mosaic_ratio < 1 or face_size[1]*self.mosaic_ratio < 1 :
-            self.mosaic_ratio = max(1/face_size[0], 1/face_size[1])
+        if face_size[0]*mosaic_ratio < 1 or face_size[1]/mosaic_ratio < 1 :
+            mosaic_ratio = max(1/face_size[0], 1/face_size[1])
         #最もモザイクの目が細かい(縮小を行わない、倍率1)
-        if self.mosaic_ratio > 1 :
-            self.mosaic_ratio = 1
+        if mosaic_ratio > 1 :
+            mosaic_ratio = 1
+        return mosaic_ratio
 
     #顔検出 検出した顔の数を返す
     def detect_face(self) :
@@ -69,13 +71,13 @@ class DetectFace() :
         return len(self.detected_faces)
 
     #最も荒いモザイクの目を計算する(顔領域の最も長い辺を探す)
-    def calc_min_mosaic_ratio(self) :
+    def calc_min_mosaic_size(self) :
         longest_side = 1
         for face_area in self.detect_faces :
             long_side = max(face_area[2], face_area[3])
             longest_side = max(longest_side, long_side)
-        min_mosaic_ratio = 1/longest_side
-        return min_mosaic_ratio
+        min_mosaic_size = 1/longest_side
+        return min_mosaic_size
 
 
     #顔を囲む四角を描く（番号なし）
@@ -111,11 +113,13 @@ class DetectFace() :
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
         file_path = self.result_path 
+        mosaic_ratio = 1
         for i, face_area in enumerate(self.detected_faces) :
             if self.active_faces[i] :
-                self._fix_mosaic_ratio(face_area[2:4])
+                mosaic_ratio = 1
+                mosaic_ratio = self._fix_mosaic_ratio(face_area[2:4])
                 small_image = cv2.resize(copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]], 
-                None, fx = self.mosaic_ratio, fy = self.mosaic_ratio, interpolation = cv2.INTER_NEAREST)
+                None, fx = mosaic_ratio, fy = mosaic_ratio, interpolation = cv2.INTER_NEAREST)
                 copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]] = cv2.resize(small_image, tuple(face_area[2:4]), interpolation = cv2.INTER_NEAREST) 
         cv2.imwrite(file_path, copy_image)
         return file_path
