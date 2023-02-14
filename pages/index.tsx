@@ -2,7 +2,8 @@ import styled from './input.module.scss';
 import React, { useState } from 'react';
 import axios from "axios";
 import Select, { MultiValue } from 'react-select';
-import { stringify } from 'querystring';
+import Image from 'next/image';
+import { Button } from '@mui/material';
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -15,8 +16,10 @@ export default function MainPage() {
 		value: string;
 		label: string;
 	}
-  const [profileImage, setProfileImage] = useState('face_image1.jpeg');
-  const [photo, setPhoto] =useState('face_image1.jpeg');
+  const [photo, setPhoto] =useState<string>('/face_image1.jpeg');
+	const myLoader = ({ src, width, quality }) => {
+		return `${src}`
+	}
 	const [parameter, setParameter] = useState<ParameterObject>({mosaic_type: '1', strength: '2'});
 	const [adapt, setAdapt] = useState<OptionAdapt[]>([{value: '1', label: '1'},{value: '2', label: '2'}]);
 	const [person, setPerson] = useState<string>('');
@@ -26,16 +29,13 @@ export default function MainPage() {
 		{value: '2', label: 'stamp'}
 	];
 
-  // const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (!e.target.files) return;
-  //   // React.ChangeEvent<HTMLInputElement>よりファイルを取得
-  //   const fileObject = e.target.files[0];
-  //   // オブジェクトURLを生成し、profileImageを更新
-  //   setProfileImage(window.URL.createObjectURL(fileObject));
-  // }
   const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+    if (!e.target.files[0]) {
+			setPhoto('/face_image1.jpeg');
+			return;
+		}
     // React.ChangeEvent<HTMLInputElement>よりファイルを取得
+		console.log("送信");
     const fileObject = e.target.files[0];
 		const formData = new FormData();
 		formData.append('image', fileObject);
@@ -128,14 +128,15 @@ export default function MainPage() {
 			<Select id="selectbox" instanceId="selectbox" defaultValue={{value:'1',label:'mosaic'}} onChange={(e) => onChangeType(e!.value as string)} options={option_type}/>
 			<label>モザイク強度</label>
 			<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input>
-			<button className={styled.addTodoButton} onClick={onClickChangePhoto}>input</button><br />
+			<Button className={styled.addTodoButton} onClick={onClickChangePhoto}>input</Button><br />
 			<label>モザイク化したくない人の番号</label>
 			<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 		</div>
-		<div>
-			<img src={photo} className={styled.heading2} />
-    	</div>
-		<img src=" " id="image01" className={styled.heading2} />
+		<div className={styled.inputArea}>
+			<Image loader={myLoader} src={photo} alt="input picture" width={500} height={500}/>
+			{/* <img src={photo} className={styled.heading2} /> */}
+    </div>
+		{/* <img src={photo} id="image01" className={styled.heading2} /> */}
 		<button onClick={onClickApi}>画像表示</button>
 		</>
   );
