@@ -1,6 +1,8 @@
 import sys
 import cv2
 import numpy as np
+import mediapipe as mp
+import process_mp
 
 class DetectFace() :
     """
@@ -19,9 +21,14 @@ class DetectFace() :
     active_faces :  処理される顔のリスト,Trueで処理実行,Falseで処理しない リストの番号と識別時の顔番号が対応する
 
     """
-
+    #load haar like cascade file
     cascade_path = "./mosaics/process_image/resource/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(cascade_path)
+
+    #load mediapipe detection
+    mp_face_detection = mp.solutions.face_detection
+    mp_drawing = mp.solutions.drawing_utils
+
     smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
     smile_face_image = cv2.imread(smile_face_path, flags = cv2.IMREAD_UNCHANGED)
 
@@ -65,7 +72,7 @@ class DetectFace() :
         #ぼかしサイズが大きすぎる場合顔領域サイズに補正
         blur_filter_size[0] = min(face_size[0], blur_filter_size[0])
         blur_filter_size[1] = min(face_size[1], blur_filter_size[1])
-        #ぼかしサイズが地位あ過ぎる場合1に補正
+        #ぼかしサイズが地位が過ぎる場合1に補正
         blur_filter_size[0] = max(1, blur_filter_size[0])
         blur_filter_size[1] = max(1, blur_filter_size[1])
         return blur_filter_size
@@ -74,6 +81,17 @@ class DetectFace() :
     def detect_face(self) :
         image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.detected_faces = self.face_cascade.detectMultiScale(image_gray)
+        if self.detected_faces == []:
+            print("No face detected from select image")
+        else :
+            self.detected_faces = sorted(self.detected_faces, key= lambda x : (x[0], x[1]))
+            self.active_faces = [True] * len(self.detected_faces)
+        return len(self.detected_faces)
+
+    #mediapipeを利用した顔検出
+    def detect_face_mp(self, mp_face_detection) :
+        face_size = [self.image.shape[1], self.image_shape[0]]
+        self.detected_faces = process_mp.face_detect(self.image, mp_face_detection, face_size)
         if self.detected_faces == []:
             print("No face detected from select image")
         else :
