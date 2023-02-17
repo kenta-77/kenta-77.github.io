@@ -89,15 +89,15 @@ class DetectFace() :
         return len(self.detected_faces)
 
     #mediapipeを利用した顔検出
-    def detect_face_mp(self, mp_face_detection) :
-        face_size = [self.image.shape[1], self.image_shape[0]]
-        self.detected_faces = process_mp.face_detect(self.image, mp_face_detection, face_size)
-        if self.detected_faces == []:
-            print("No face detected from select image")
-        else :
-            self.detected_faces = sorted(self.detected_faces, key= lambda x : (x[0], x[1]))
-            self.active_faces = [True] * len(self.detected_faces)
-        return len(self.detected_faces)
+    # def detect_face_mp(self, mp_face_detection) :
+    #     face_size = [self.image.shape[1], self.image_shape[0]]
+    #     self.detected_faces = process_mp.face_detect(self.image, mp_face_detection, face_size)
+    #     if self.detected_faces == []:
+    #         print("No face detected from select image")
+    #     else :
+    #         self.detected_faces = sorted(self.detected_faces, key= lambda x : (x[0], x[1]))
+    #         self.active_faces = [True] * len(self.detected_faces)
+    #     return len(self.detected_faces)
 
     #最も荒いモザイクの目を計算する(顔領域の最も長い辺を探す)
     def calc_max_filter_size(self) :
