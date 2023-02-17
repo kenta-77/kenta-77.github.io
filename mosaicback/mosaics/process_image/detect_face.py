@@ -80,12 +80,13 @@ class DetectFace() :
             mosaic_ratio = 1
         return mosaic_ratio
 
+    #ぼかし強さの自動補正
     def _fix_blur_filter_size(self, face_size) :
         blur_filter_size = [self.filter_size, self.filter_size]
         #ぼかしサイズが大きすぎる場合顔領域サイズに補正
         blur_filter_size[0] = min(face_size[0], blur_filter_size[0])
         blur_filter_size[1] = min(face_size[1], blur_filter_size[1])
-        #ぼかしサイズが地位が過ぎる場合1に補正
+        #ぼかしサイズが小さ過ぎる場合1に補正
         blur_filter_size[0] = max(1, blur_filter_size[0])
         blur_filter_size[1] = max(1, blur_filter_size[1])
         return blur_filter_size
@@ -112,7 +113,7 @@ class DetectFace() :
     #         self.active_faces = [True] * len(self.detected_faces)
     #     return len(self.detected_faces)
 
-    #最も荒いモザイクの目を計算する(顔領域の最も長い辺を探す)
+    #最も大きいフィルタサイズを計算する(顔領域の最も長い辺を探す)
     def calc_max_filter_size(self) :
         longest_side = 1
         for face_area in self.detect_faces :
