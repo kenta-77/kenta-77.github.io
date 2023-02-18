@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@chakra-ui/react';
+import { Box, Text } from "@chakra-ui/react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -120,7 +123,18 @@ export default function MainPage() {
 	
   return (
 	<>
-		<h1 className={styled.heading}>モザイクアプリ</h1>
+	<Box
+    bg="#000"
+    opacity="0.9"
+    color="#ffffff"
+    h={24}
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+  ><Text fontSize={44} fontFamily="Roboto" fontWeight="bold"
+	>FaMo</Text>
+	<FontAwesomeIcon icon={faGithub} />
+	</Box>
 		<div className={styled.inputArea}>
 			<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
 			<h1 className={styled.heading}>モザイクパラメータ</h1>
@@ -128,7 +142,7 @@ export default function MainPage() {
 			<Select id="selectbox" instanceId="selectbox" defaultValue={{value:'1',label:'mosaic'}} onChange={(e) => onChangeType(e!.value as string)} options={option_type}/>
 			<label>モザイク強度</label>
 			<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input>
-			<Button className={styled.addTodoButton} onClick={onClickChangePhoto}>input</Button><br />
+			<Button variant="contained" onClick={onClickChangePhoto}>input</Button><br />
 			<label>モザイク化したくない人の番号</label>
 			<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 		</div>
@@ -136,7 +150,7 @@ export default function MainPage() {
 			<Image loader={myLoader} src={photo} alt="input picture" width={500} height={500}/>
 			{/* <img src={photo} className={styled.heading2} /> */}
     </div>
-		{/* <img src={photo} id="image01" className={styled.heading2} /> */}
+		<img src={photo} id="image01" className={styled.heading2} />
 		<button onClick={onClickApi}>画像表示</button>
 		</>
   );
