@@ -4,9 +4,11 @@ import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Flex, Center, Heading, Card, CardBody, CardFooter, Stack, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs} from "@chakra-ui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { maxWidth } from '@mui/system';
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -20,10 +22,11 @@ export default function MainPage() {
 		label: string;
 	}
   const [photo, setPhoto] =useState<string>('/face_image1.jpeg');
+  const [result_photo, setResultPhoto] =useState<string>('/face_image1.jpeg');
 	const myLoader = ({ src, width, quality }) => {
 		return `${src}`
 	}
-	const [parameter, setParameter] = useState<ParameterObject>({mosaic_type: '1', strength: '2'});
+	const [parameter, setParameter] = useState<ParameterObject>({mosaic_type: '0', strength: '1'});
 	const [adapt, setAdapt] = useState<OptionAdapt[]>([{value: '1', label: '1'},{value: '2', label: '2'}]);
 	const [person, setPerson] = useState<string>('');
 
@@ -97,9 +100,10 @@ export default function MainPage() {
 		let users = await res.json();
 		let photosrc = "http://127.0.0.1:8000" + users["result"];
 		let image_src = document.getElementById("image01");
-		if (image_src instanceof HTMLImageElement){
-			image_src.src = photosrc;
-		}
+		setResultPhoto(photosrc);
+		// if (image_src instanceof HTMLImageElement){
+		// 	image_src.src = photosrc;
+		// }
 	}
 
 	const onChangeType = (value: string) => {
@@ -119,6 +123,7 @@ export default function MainPage() {
 			adapt_text = selection.value + "," + adapt_text;
 			setPerson(`${adapt_text}`);
 		});
+		console.log(person);
 	}
 	
   return (
@@ -127,31 +132,92 @@ export default function MainPage() {
     bg="#000"
     opacity="0.9"
     color="#ffffff"
-    h={24}
+    h={20}
     display="flex"
     justifyContent="center"
     alignItems="center"
-  ><Text fontSize={44} fontFamily="Roboto" fontWeight="bold"
+  ><Text fontSize={40} fontFamily="Roboto" fontWeight="bold"
 	>FaMo</Text>
 	<FontAwesomeIcon icon={faGithub} />
 	</Box>
-		<div className={styled.inputArea}>
-			<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
-			<h1 className={styled.heading}>モザイクパラメータ</h1>
-			<label>モザイクタイプ</label>
-			<Select id="selectbox" instanceId="selectbox" defaultValue={{value:'1',label:'mosaic'}} onChange={(e) => onChangeType(e!.value as string)} options={option_type}/>
-			<label>モザイク強度</label>
-			<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input>
-			<Button variant="contained" onClick={onClickChangePhoto}>input</Button><br />
-			<label>モザイク化したくない人の番号</label>
-			<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-		</div>
-		<div className={styled.inputArea}>
-			<Image loader={myLoader} src={photo} alt="input picture" width={500} height={500}/>
-			{/* <img src={photo} className={styled.heading2} /> */}
-    </div>
-		<img src={photo} id="image01" className={styled.heading2} />
-		<button onClick={onClickApi}>画像表示</button>
+		<Flex bg='blue'>
+				<Box m="3%" borderWidth='1px' width="44%" height="680px" bg='tomato' shadow="md" rounded="md">
+					<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
+						<Center>
+							<Heading>画像選択</Heading>
+						</Center>
+						<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
+					</Box>
+					<Box width="100%" position="relative" height="400px" bg='yellow' shadow="md" rounded="md">
+						<Center bg='tomato'>
+							<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+						</Center>
+					</Box>
+					<Box width="100%" height="200px" bg='green' shadow="md" rounded="md">
+						モザイクタイプ
+						<Tabs variant='soft-rounded' colorScheme='green' onChange={(e) => onChangeType(String(e))}>
+							<TabList>
+								<Tab>モザイク</Tab>
+								<Tab>ぼかし</Tab>
+								<Tab>スタンプ</Tab>
+							</TabList>
+							<TabPanels>
+								<TabPanel>
+									<label>モザイク強度</label>
+									<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input><br />
+									<label>モザイク化したくない人の番号</label>
+									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+								</TabPanel>
+								<TabPanel>
+									<label>ぼかし強度</label>
+									<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input><br />
+									<label>ぼかしたくない人の番号</label>
+									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+								</TabPanel>
+								<TabPanel>
+									<label>スタンプ化したくない人の番号</label>
+									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+								</TabPanel>
+							</TabPanels>
+						</Tabs>
+						{/* <Select id="selectbox" instanceId="selectbox" defaultValue={{value:'1',label:'mosaic'}} onChange={(e) => onChangeType(e!.value as string)} options={option_type}/>
+						<label>モザイク強度</label>
+						<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input>
+						<Button variant="contained" onClick={onClickChangePhoto}>input</Button><br />
+						<label>モザイク化したくない人の番号</label>
+						<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/> */}
+					</Box>
+				</Box>
+			<Box m="3%" borderWidth='1px' width="44%" height="680px" bg='tomato' shadow="md" rounded="md">
+				<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
+					<Center>
+						<Heading>処理結果</Heading>
+					</Center>
+				</Box>
+				<Box width="100%" position="relative" height="400px" bg='yellow' shadow="md" rounded="md">
+					<Center w="50%" bg='tomato'>
+						<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+					</Center>
+				</Box>
+				<Box width="100%" height="200px" bg='green' shadow="md" rounded="md">
+					<Center color='black'>
+						<Box w="50%">
+							<Center>
+								<Button onClick={onClickApi}>画像表示</Button>
+							</Center>
+						</Box>
+						<Box w="50%">
+							<Center>
+								<Button>保存</Button>
+							</Center>
+						</Box>
+					</Center>
+				</Box>
+			</Box>
+		</Flex>
 		</>
   );
 };
