@@ -4,7 +4,8 @@ import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { Box, Text, Flex, Center, Heading, Card, CardBody, CardFooter, Stack, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs} from "@chakra-ui/react";
+import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack} from "@chakra-ui/react";
+// import {Select, MultiValue} from 'chakra-react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +29,8 @@ export default function MainPage() {
 	}
 	const [parameter, setParameter] = useState<ParameterObject>({mosaic_type: '0', strength: '1'});
 	const [adapt, setAdapt] = useState<OptionAdapt[]>([{value: '1', label: '1'},{value: '2', label: '2'}]);
-	const [person, setPerson] = useState<string>('');
+	const [person, setPerson] = useState<string>(',');
+  const [showTooltip, setShowTooltip] = React.useState(false);
 
 	const option_type = [
 		{value: '1', label: 'mosaic'},
@@ -84,6 +86,7 @@ export default function MainPage() {
 		}
 		formData.append('mosaic_type', String(parameter.mosaic_type));
 		formData.append('strength', String(parameter.strength));
+		console.log(person);
 		formData.append('rect_number', person);
     await axios.post(
 			'http://127.0.0.1:8000/mosaics/',
@@ -123,7 +126,6 @@ export default function MainPage() {
 			adapt_text = selection.value + "," + adapt_text;
 			setPerson(`${adapt_text}`);
 		});
-		console.log(person);
 	}
 	
   return (
@@ -141,63 +143,120 @@ export default function MainPage() {
 	<FontAwesomeIcon icon={faGithub} />
 	</Box>
 		<Flex bg='blue'>
-				<Box m="3%" borderWidth='1px' width="44%" height="680px" bg='tomato' shadow="md" rounded="md">
+				<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="660px" bg='tomato' shadow="md" rounded="md">
 					<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
 						<Center>
-							<Heading>画像選択</Heading>
+							<Heading>画像を選ぶ</Heading>
 						</Center>
 						<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
 					</Box>
-					<Box width="100%" position="relative" height="400px" bg='yellow' shadow="md" rounded="md">
+					<Box width="100%" position="relative" height="360px" bg='yellow' shadow="md" rounded="md">
 						<Center bg='tomato'>
 							<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
 						</Center>
 					</Box>
-					<Box width="100%" height="200px" bg='green' shadow="md" rounded="md">
-						モザイクタイプ
+					<Box width="100%" height="220px" bg='green' shadow="md" rounded="md">
 						<Tabs variant='soft-rounded' colorScheme='green' onChange={(e) => onChangeType(String(e))}>
-							<TabList>
-								<Tab>モザイク</Tab>
-								<Tab>ぼかし</Tab>
-								<Tab>スタンプ</Tab>
-							</TabList>
+							<Center p="2">
+								<TabList>
+									<Tab>モザイク</Tab>
+									<Tab>ぼかし</Tab>
+									<Tab>スタンプ</Tab>
+								</TabList>
+							</Center>
 							<TabPanels>
 								<TabPanel>
-									<label>モザイク強度</label>
-									<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input><br />
-									<label>モザイク化したくない人の番号</label>
-									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+									<VStack spacing="3%" align='stretch'>
+										<HStack spacing={2}>
+											<Box w="20%">
+												<Text color="teal.300">モザイク強度</Text>
+											</Box>
+											<Box w="80%">
+												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+													<SliderMark value={0.15} mt='1' ml='-2.5' fontSize='sm'>低</SliderMark>
+													<SliderMark value={0.5} mt='1' ml='-2.5' fontSize='sm'>中</SliderMark>
+													<SliderMark value={0.95} mt='1' ml='-2.5' fontSize='sm'>高</SliderMark>
+													<SliderTrack>
+														<SliderFilledTrack />
+													</SliderTrack>
+													<Tooltip hasArrow bg='teal.500' color='white' placement='top' isOpen={showTooltip}>
+														<SliderThumb />
+													</Tooltip>
+												</Slider>
+											</Box>
+										</HStack>
+										<HStack spacing={2}>
+											<Box w="20%">
+												<Text color="teal.300">加工しない人</Text>
+											</Box>
+											<Box w="80%">
+												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+											</Box>
+										</HStack>
+										<Box w="25%">
+											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+										</Box>
+								</VStack>
 								</TabPanel>
 								<TabPanel>
-									<label>ぼかし強度</label>
-									<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input><br />
-									<label>ぼかしたくない人の番号</label>
-									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+								<VStack spacing="3%" align='stretch'>
+										<HStack spacing={2}>
+											<Box w="20%">
+												<Text color="teal.300">ぼかし強度</Text>
+											</Box>
+											<Box w="80%">
+												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+													<SliderMark value={0.15} mt='1' ml='-2.5' fontSize='sm'>低</SliderMark>
+													<SliderMark value={0.5} mt='1' ml='-2.5' fontSize='sm'>中</SliderMark>
+													<SliderMark value={0.95} mt='1' ml='-2.5' fontSize='sm'>高</SliderMark>
+													<SliderTrack>
+														<SliderFilledTrack />
+													</SliderTrack>
+													<Tooltip hasArrow bg='teal.500' color='white' placement='top' isOpen={showTooltip}>
+														<SliderThumb />
+													</Tooltip>
+												</Slider>
+											</Box>
+										</HStack>
+										<HStack spacing={2}>
+											<Box w="20%">
+												<Text color="teal.300">加工しない人</Text>
+											</Box>
+											<Box w="80%">
+												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+											</Box>
+										</HStack>
+										<Box w="25%">
+											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+										</Box>
+								</VStack>
 								</TabPanel>
 								<TabPanel>
-									<label>スタンプ化したくない人の番号</label>
-									<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-									<Button variant="contained" onClick={onClickChangePhoto}>input</Button>
+								<VStack spacing="3%" align='stretch'>
+									<HStack spacing={2}>
+											<Box w="20%">
+												<Text color="teal.300">加工しない人</Text>
+											</Box>
+											<Box w="80%">
+												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+											</Box>
+										</HStack>
+										<Box w="25%">
+											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+										</Box>
+								</VStack>
 								</TabPanel>
 							</TabPanels>
 						</Tabs>
-						{/* <Select id="selectbox" instanceId="selectbox" defaultValue={{value:'1',label:'mosaic'}} onChange={(e) => onChangeType(e!.value as string)} options={option_type}/>
-						<label>モザイク強度</label>
-						<input type="range" min="0" max="1" step="0.01" onChange={(e) => onChangeStrength(e!.target.value as string)}></input>
-						<Button variant="contained" onClick={onClickChangePhoto}>input</Button><br />
-						<label>モザイク化したくない人の番号</label>
-						<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/> */}
 					</Box>
 				</Box>
-			<Box m="3%" borderWidth='1px' width="44%" height="680px" bg='tomato' shadow="md" rounded="md">
+			<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="640px" bg='tomato' shadow="md" rounded="md">
 				<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
 					<Center>
-						<Heading>処理結果</Heading>
+						<Heading>加工を確認する</Heading>
 					</Center>
 				</Box>
-				<Box width="100%" position="relative" height="400px" bg='yellow' shadow="md" rounded="md">
+				<Box width="100%" position="relative" height="360px" bg='yellow' shadow="md" rounded="md">
 					<Center w="50%" bg='tomato'>
 						<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
 					</Center>

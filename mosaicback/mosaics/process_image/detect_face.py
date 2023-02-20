@@ -110,6 +110,8 @@ class DetectFace() :
 
     #顔領域にスタンプをつける（active_faces==Trueのみ）
     def stamp_smile_face(self) :
+        for i in self.active_person:
+            self.active_faces[int(i)] = False
         copy_image = self.image.copy()
         # file_path = self.database_path + "stamp_image.jpg" 
         file_path = self.result_path 
