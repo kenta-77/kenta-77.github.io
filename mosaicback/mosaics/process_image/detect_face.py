@@ -1,6 +1,7 @@
 import sys
 import cv2
 import numpy as np
+import detect_retina as dr
 
 class DetectFace() :
     """
@@ -26,9 +27,6 @@ class DetectFace() :
     cascade_path = "./mosaics/process_image/resource/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(cascade_path)
 
-    #load mediapipe detection
-    mp_face_detection = mp.solutions.face_detection
-    mp_drawing = mp.solutions.drawing_utils
 
     #load stamp
     smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
@@ -102,16 +100,8 @@ class DetectFace() :
             self.active_faces = [True] * len(self.detected_faces)
         return len(self.detected_faces)
 
-    #mediapipeを利用した顔検出
-    # def detect_face_mp(self, mp_face_detection) :
-    #     face_size = [self.image.shape[1], self.image_shape[0]]
-    #     self.detected_faces = process_mp.face_detect(self.image, mp_face_detection, face_size)
-    #     if self.detected_faces == []:
-    #         print("No face detected from select image")
-    #     else :
-    #         self.detected_faces = sorted(self.detected_faces, key= lambda x : (x[0], x[1]))
-    #         self.active_faces = [True] * len(self.detected_faces)
-    #     return len(self.detected_faces)
+    #retina_faceを利用した顔検出
+    
 
     #最も大きいフィルタサイズを計算する(顔領域の最も長い辺を探す)
     def calc_max_filter_size(self) :
