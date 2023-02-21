@@ -40,8 +40,10 @@ def mosaic_upload(request):
       detect_test.detect_face() #顔検知メソッドを実行
       detect_write = detect_test.write_rectangle() #検知した顔の領域を表示するメソッドを実行
       detect_write = detect_test.write_rect_and_number() #検知した顔の領域を表示するメソッドを実行
-      if int(mosaic.mosaic_type) == 1:
+      if int(mosaic.mosaic_type) == 0:
         detect_stamp = detect_test.mosaic_face() #検知した顔にモザイクを表示するメソッドを実行
+      elif int(mosaic.mosaic_type) == 1:
+        detect_stamp = detect_test.stamp_smile_face() #検知した顔にスタンプを表示するメソッドを実行
       elif int(mosaic.mosaic_type) == 2:
         detect_stamp = detect_test.stamp_smile_face() #検知した顔にスタンプを表示するメソッドを実行
       mosaic.result = "results/" + str(result_path) + "result.jpg" #結果画像のurlをDBに登録
