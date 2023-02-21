@@ -8,8 +8,6 @@ import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab,
 // import {Select, MultiValue} from 'chakra-react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { maxWidth } from '@mui/system';
 
 export default function MainPage() {
   // useState()で画像のパスを保持

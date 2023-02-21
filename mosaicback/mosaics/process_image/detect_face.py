@@ -27,8 +27,8 @@ class DetectFace() :
     face_cascade = cv2.CascadeClassifier(cascade_path)
 
     #load mediapipe detection
-    mp_face_detection = mp.solutions.face_detection
-    mp_drawing = mp.solutions.drawing_utils
+    # mp_face_detection = mp.solutions.face_detection
+    # mp_drawing = mp.solutions.drawing_utils
 
     #load stamp
     smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
