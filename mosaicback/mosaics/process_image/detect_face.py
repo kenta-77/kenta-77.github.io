@@ -104,8 +104,10 @@ class DetectFace() :
     #最も大きいフィルタサイズを計算する(顔領域の最も長い辺を探す)
     def calc_max_filter_size(self) :
         longest_side = 1
-        for face_area in self.detect_faces :
-            long_side = max(face_area[2], face_area[3])
+        for i, key in enumerate(self.detected_faces) :
+            identity = self.active_faces[key]
+            facial_area = identity["facial_area"]
+            long_side = max((faceial_area[2]-facial_area[0]), (facial_area[3]-facial_area[1]))
             longest_side = max(longest_side, long_side)
         max_filter_size = longest_side
         return max_filter_size
@@ -151,8 +153,10 @@ class DetectFace() :
             if self.active_faces[i] :
                 identity = self.active_faces[key]
                 facial_area = identity["facial_area"]
+                width = facial_area[2] - facial_area[0]
+                height = facial_area[3] - facial_area[1]
                 mosaic_ratio = 1
-                mosaic_ratio = self._fix_mosaic_ratio(face_area[2:4])
+                mosaic_ratio = self._fix_mosaic_ratio(tuple(width, height))
 
                 small_image = cv2.resize(copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]], 
                 None, fx = mosaic_ratio, fy = mosaic_ratio, interpolation = cv2.INTER_NEAREST)
@@ -167,12 +171,17 @@ class DetectFace() :
         copy_image = self.image.copy()
         # file_path = self.database_path + "mosaic_image.jpg"
         file_path = self.result_path 
-        for i, face_area in enumerate(self.detected_faces) :
+
+        for i, key in enumerate(self.detected_faces) :
             if self.active_faces[i] :
+                identity = self.active_faces[key]
+                facial_area = identity["facial_area"]
+                width = facial_area[2] - facial_area[0]
+                height = facial_area[3] - facial_area[1]
                 blur_filter_size = [1,1]
-                blur_filter_size = self._fix_blur_filter_size(face_area[2:4])
-                blur_image = cv2.blur(copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]], tuple(blur_filter_size))
-                copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]] = blur_image
+                blur_filter_size = self._fix_blur_filter_size(tuple(width, height))
+                blur_image = cv2.blur(copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]], tuple(blur_filter_size))
+                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = blur_image
         cv2.imwrite(file_path, copy_image)
         return file_path
 
@@ -181,18 +190,24 @@ class DetectFace() :
         copy_image = self.image.copy()
         # file_path = self.database_path + "stamp_image.jpg"
         file_path = self.result_path
-        for i, face_area in enumerate(self.detected_faces) :
+
+        for i, key in enumerate(self.detected_faces) :
             if self.active_faces[i] :
-                small_stamp = cv2.resize(self.stamp_dict[stamp_name], tuple(face_area[2:4]), interpolation = cv2.INTER_NEAREST)
+                identity = self.active_faces[key]
+                facial_area = identity["facial_area"]
+                width = facial_area[2] - facial_area[0]
+                height = facial_area[3] - facial_area[1]
+                small_stamp = cv2.resize(self.stamp_dict[stamp_name], tuple(width, height), interpolation = cv2.INTER_NEAREST)
                 small_mask = small_stamp[:,:,3]
                 small_stamp = small_stamp[:,:,:3]
                 small_mask = small_mask > 0
                 small_mask = small_mask.astype(np.uint8)
                 small_mask = cv2.cvtColor(small_mask, cv2.COLOR_GRAY2BGR)
-                copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]] = \
-                copy_image[face_area[1]:face_area[1]+face_area[3], face_area[0]:face_area[0]+face_area[3]] * (1 - small_mask) + small_stamp * small_mask
+                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = \
+                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] * (1 - small_mask) + small_stamp * small_mask
         cv2.imwrite(file_path, copy_image)
         return file_path
+
 
 # if __name__ == '__main__' :
 #     detect_test = DetectFace("./resource/", "image_test.jpeg")
