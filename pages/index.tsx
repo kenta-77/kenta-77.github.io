@@ -131,9 +131,9 @@ export default function MainPage() {
   return (
 	<>
 	<Box
-    bg="#000"
+    bg="teal.400"
     opacity="0.9"
-    color="#ffffff"
+    color="#ffff"
     h={20}
     display="flex"
     justifyContent="center"
@@ -142,20 +142,20 @@ export default function MainPage() {
 	>FaMo</Text>
 	<FontAwesomeIcon icon={faGithub} />
 	</Box>
-		<Flex bg='blue'>
-				<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="660px" bg='tomato' shadow="md" rounded="md">
-					<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
+		<Flex bg="blackAlpha.50">
+				<Box bg="white" mt="2%" ml="3%" mr="3%" borderWidth='3px' width="44%" height="670px" shadow="md" rounded="md" borderColor="teal.400">
+					<Box width="100%" height="90px">
 						<Center>
-							<Heading>画像を選ぶ</Heading>
+							<Heading p="5px" color="teal.400">画像を選ぶ</Heading>
 						</Center>
 						<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
 					</Box>
-					<Box width="100%" position="relative" height="360px" bg='yellow' shadow="md" rounded="md">
-						<Center bg='tomato'>
+					<Box width="100%" position="relative" height="360px" borderWidth="1px">
+						<Center>
 							<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
 						</Center>
 					</Box>
-					<Box width="100%" height="220px" bg='green' shadow="md" rounded="md">
+					<Box width="100%" height="220px" shadow="md" rounded="md">
 						<Tabs variant='soft-rounded' colorScheme='green' onChange={(e) => onChangeType(String(e))}>
 							<Center p="2">
 								<TabList>
@@ -169,7 +169,7 @@ export default function MainPage() {
 									<VStack spacing="3%" align='stretch'>
 										<HStack spacing={2}>
 											<Box w="20%">
-												<Text color="teal.300">モザイク強度</Text>
+												<Text as='b' color="teal.400">モザイク強度</Text>
 											</Box>
 											<Box w="80%">
 												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
@@ -179,7 +179,7 @@ export default function MainPage() {
 													<SliderTrack>
 														<SliderFilledTrack />
 													</SliderTrack>
-													<Tooltip hasArrow bg='teal.500' color='white' placement='top' isOpen={showTooltip}>
+													<Tooltip hasArrow bg='teal.400' color='white' placement='top' isOpen={showTooltip}>
 														<SliderThumb />
 													</Tooltip>
 												</Slider>
@@ -187,14 +187,14 @@ export default function MainPage() {
 										</HStack>
 										<HStack spacing={2}>
 											<Box w="20%">
-												<Text color="teal.300">加工しない人</Text>
+												<Text as='b' color="teal.400">加工しない人</Text>
 											</Box>
 											<Box w="80%">
 												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 											</Box>
 										</HStack>
 										<Box w="25%">
-											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+											<Button colorScheme='red' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
 										</Box>
 								</VStack>
 								</TabPanel>
@@ -202,7 +202,7 @@ export default function MainPage() {
 								<VStack spacing="3%" align='stretch'>
 										<HStack spacing={2}>
 											<Box w="20%">
-												<Text color="teal.300">ぼかし強度</Text>
+												<Text as='b' color="teal.400">ぼかし強度</Text>
 											</Box>
 											<Box w="80%">
 												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
@@ -220,7 +220,7 @@ export default function MainPage() {
 										</HStack>
 										<HStack spacing={2}>
 											<Box w="20%">
-												<Text color="teal.300">加工しない人</Text>
+												<Text as='b' color="teal.400">加工しない人</Text>
 											</Box>
 											<Box w="80%">
 												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
@@ -235,7 +235,7 @@ export default function MainPage() {
 								<VStack spacing="3%" align='stretch'>
 									<HStack spacing={2}>
 											<Box w="20%">
-												<Text color="teal.300">加工しない人</Text>
+												<Text as='b' color="teal.400">加工しない人</Text>
 											</Box>
 											<Box w="80%">
 												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
@@ -250,27 +250,27 @@ export default function MainPage() {
 						</Tabs>
 					</Box>
 				</Box>
-			<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="640px" bg='tomato' shadow="md" rounded="md">
-				<Box width="100%" height="80px" bg='orange' shadow="md" rounded="md">
+			<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="670px" shadow="md" rounded="md">
+				<Box width="100%" height="90px" shadow="md" rounded="md">
 					<Center>
-						<Heading>加工を確認する</Heading>
+						<Heading p="5px" color="teal.400">加工を確認する</Heading>
 					</Center>
 				</Box>
-				<Box width="100%" position="relative" height="360px" bg='yellow' shadow="md" rounded="md">
+				<Box width="100%" position="relative" height="360px" shadow="md" rounded="md">
 					<Center w="50%" bg='tomato'>
 						<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
 					</Center>
 				</Box>
-				<Box width="100%" height="200px" bg='green' shadow="md" rounded="md">
+				<Box width="100%" height="200px" shadow="md" rounded="md">
 					<Center color='black'>
 						<Box w="50%">
 							<Center>
-								<Button onClick={onClickApi}>画像表示</Button>
+								<Button colorScheme='red' variant='solid' onClick={onClickApi}>画像を表示する</Button>
 							</Center>
 						</Box>
 						<Box w="50%">
-							<Center>
-								<Button>保存</Button>
+							<Center p="5">
+								<Button colorScheme='red' variant='solid' onClick={onClickApi}>保存</Button>
 							</Center>
 						</Box>
 					</Center>
