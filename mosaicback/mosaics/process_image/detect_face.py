@@ -23,10 +23,6 @@ class DetectFace() :
     stamp_dict :    スタンプのリスト,keyでスタンプの種類を指定する
 
     """
-    #load haar like cascade file
-    cascade_path = "./mosaics/process_image/resource/haarcascade_frontalface_default.xml"
-    face_cascade = cv2.CascadeClassifier(cascade_path)
-
 
     #load stamp
     smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
@@ -44,7 +40,7 @@ class DetectFace() :
     }
 
     #pre process
-    def __init__(self, database_path, image_file, result_path, filter_size, rect_number = '') :
+    def __init__(self, database_path, image_file, result_path='', filter_size=1, rect_number = '') :
         self.database_path = database_path
         self.image_file = image_file
         self.filter_size = filter_size
@@ -91,7 +87,7 @@ class DetectFace() :
 
     #顔検出 検出した顔の数を返す
     def detect_face(self) :
-        self.detected_faces = dr.detect_face(img_file)
+        self.detected_faces = dr.detect_face(self.database_path+self.image_file)
         if len(self.detected_faces)==0:
             print("No face detected from select image")
         else :
@@ -105,9 +101,9 @@ class DetectFace() :
     def calc_max_filter_size(self) :
         longest_side = 1
         for i, key in enumerate(self.detected_faces) :
-            identity = self.active_faces[key]
+            identity = self.detected_faces[key]
             facial_area = identity["facial_area"]
-            long_side = max((faceial_area[2]-facial_area[0]), (facial_area[3]-facial_area[1]))
+            long_side = max((facial_area[2]-facial_area[0]), (facial_area[3]-facial_area[1]))
             longest_side = max(longest_side, long_side)
         max_filter_size = longest_side
         return max_filter_size
@@ -130,7 +126,7 @@ class DetectFace() :
             self.active_number += 1
         file_path = self.rect_path
         for i, key in enumerate(self.detected_faces) :
-            identity = self.active_faces[key]
+            identity = self.detected_faces[key]
             facial_area = identity["facial_area"]
             cv2.rectangle(copy_image, (facial_area[0], facial_area[1]), (facial_area[2], facial_area[3]), (255,255,255), 1)
             cv2.putText(copy_image, str(i+1), (facial_area[0], facial_area[3]), fontFace = cv2.FONT_ITALIC, fontScale = 0.01*(facial_area[2]-facial_area[0]),thickness=10, color = (0,0,0)) #輪郭文字の貼り付け
@@ -151,16 +147,16 @@ class DetectFace() :
 
         for i, key in enumerate(self.detected_faces) :
             if self.active_faces[i] :
-                identity = self.active_faces[key]
+                identity = self.detected_faces[key]
                 facial_area = identity["facial_area"]
                 width = facial_area[2] - facial_area[0]
                 height = facial_area[3] - facial_area[1]
                 mosaic_ratio = 1
-                mosaic_ratio = self._fix_mosaic_ratio(tuple(width, height))
+                mosaic_ratio = self._fix_mosaic_ratio((width, height))
 
                 small_image = cv2.resize(copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]], 
                 None, fx = mosaic_ratio, fy = mosaic_ratio, interpolation = cv2.INTER_NEAREST)
-                copy_imagecopy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = cv2.resize(small_image, tuple(facial_area[2]-facial_area[0], facial_area[3]-facial_area[1]), interpolation = cv2.INTER_NEAREST) 
+                copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = cv2.resize(small_image, (facial_area[2]-facial_area[0], facial_area[3]-facial_area[1]), interpolation = cv2.INTER_NEAREST) 
         cv2.imwrite(file_path, copy_image)
         return file_path
 
@@ -174,14 +170,17 @@ class DetectFace() :
 
         for i, key in enumerate(self.detected_faces) :
             if self.active_faces[i] :
-                identity = self.active_faces[key]
+                identity = self.detected_faces[key]
                 facial_area = identity["facial_area"]
                 width = facial_area[2] - facial_area[0]
                 height = facial_area[3] - facial_area[1]
                 blur_filter_size = [1,1]
-                blur_filter_size = self._fix_blur_filter_size(tuple(width, height))
+                blur_filter_size = self._fix_blur_filter_size((width, height))
                 blur_image = cv2.blur(copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]], tuple(blur_filter_size))
-                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = blur_image
+                print(blur_image.shape)
+                print(copy_image.shape)
+                copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = blur_image
+                
         cv2.imwrite(file_path, copy_image)
         return file_path
 
@@ -193,24 +192,28 @@ class DetectFace() :
 
         for i, key in enumerate(self.detected_faces) :
             if self.active_faces[i] :
-                identity = self.active_faces[key]
+                identity = self.detected_faces[key]
                 facial_area = identity["facial_area"]
                 width = facial_area[2] - facial_area[0]
                 height = facial_area[3] - facial_area[1]
-                small_stamp = cv2.resize(self.stamp_dict[stamp_name], tuple(width, height), interpolation = cv2.INTER_NEAREST)
+                small_stamp = cv2.resize(self.stamp_dict[stamp_name], (width, height), interpolation = cv2.INTER_NEAREST)
                 small_mask = small_stamp[:,:,3]
                 small_stamp = small_stamp[:,:,:3]
                 small_mask = small_mask > 0
                 small_mask = small_mask.astype(np.uint8)
                 small_mask = cv2.cvtColor(small_mask, cv2.COLOR_GRAY2BGR)
-                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = \
-                copy_image = copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] * (1 - small_mask) + small_stamp * small_mask
+                copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] = \
+                copy_image[facial_area[1]:facial_area[3], facial_area[0]:facial_area[2]] * (1 - small_mask) + small_stamp * small_mask
         cv2.imwrite(file_path, copy_image)
         return file_path
 
 
-# if __name__ == '__main__' :
-#     detect_test = DetectFace("./resource/", "image_test.jpeg")
-#     detect_test.detect_face()
-#     a = detect_test.write_rectangle()
-#     b = detect_test.stamp_smile_face()
+if __name__ == '__main__' :
+    detect_test = DetectFace("./mosaics/process_image/resource/", "sakana.jpg")
+    detect_test.detect_face()
+    detect_test.filter_size = 10
+    print(len(detect_test.detected_faces))
+    a = detect_test.write_rect_and_number()
+    #b = detect_test.blur_face()
+    #c = detect_test.mosaic_face()
+    d = detect_test.stamp_face("star")
