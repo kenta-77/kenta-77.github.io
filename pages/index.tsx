@@ -1,14 +1,16 @@
 import styled from './input.module.scss';
+import Link from "next/link";
 import React, { useState, useRef } from 'react';
 import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner, Link} from "@chakra-ui/react";
+import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner} from "@chakra-ui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import theme from "./theme";
 import { FaFacebook} from 'react-icons/fa';
+import Layout from '../components/Layout'
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -163,17 +165,7 @@ interface SocialProps {
   return (
 	<>
 	<ChakraProvider theme={theme}>
-		<Flex minWidth='max-content' alignItems='center' gap='2' bg="teal.400" opacity="0.9" color="#ffff" h="50px">
-			<Box pl='35px' as="a" href='http://localhost:3000/' _hover={{ color: "gray.100"}}>
-				<Heading fontSize={38} fontWeight="bold">FaMo</Heading>
-			</Box>
-			<Spacer />
-			<Box mr='25px' position="relative" w='38px' h="38px" >
-				<Link href='https://github.com/kenta-77/Mosaic_app'>
-					<Image src='/github-mark.png' alt="" fill style={{ objectFit: 'contain'}}/>
-				</Link>
-			</Box>
-		</Flex>
+		<Layout> </Layout>
 		<Flex>
 				<Box bg="white" mt="10px" ml="3%" mr="3%" width="44%" height="690px" rounded="md" borderColor="blackAlpha.50">
 					<Box w="200px">
