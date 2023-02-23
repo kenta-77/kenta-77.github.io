@@ -331,6 +331,13 @@ interface SocialProps {
 											</Center>
 										</Link>
 									</Box>
+									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px'> {/* instagram29px以上 */}
+										<Link href='https://timeline.line.me/social-plugin/share?url=&text='>
+											<Center h='100%' w='100%'>
+												<Image src='/LINE.png' alt="" fill style={{ objectFit: 'contain'}}/>
+											</Center>
+										</Link>
+									</Box>
 								</Flex>
 							</Box>
 						</VStack>
