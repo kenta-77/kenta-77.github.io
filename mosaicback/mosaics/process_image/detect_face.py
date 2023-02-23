@@ -27,8 +27,8 @@ class DetectFace() :
     face_cascade = cv2.CascadeClassifier(cascade_path)
 
     #load mediapipe detection
-    mp_face_detection = mp.solutions.face_detection
-    mp_drawing = mp.solutions.drawing_utils
+    # mp_face_detection = mp.solutions.face_detection
+    # mp_drawing = mp.solutions.drawing_utils
 
     #load stamp
     smile_face_path = "./mosaics/process_image/resource/smiling_face_with_smiling_eyes_3d.png"
@@ -84,11 +84,11 @@ class DetectFace() :
     def _fix_blur_filter_size(self, face_size) :
         blur_filter_size = [self.filter_size, self.filter_size]
         #ぼかしサイズが大きすぎる場合顔領域サイズに補正
-        blur_filter_size[0] = min(face_size[0], blur_filter_size[0])
-        blur_filter_size[1] = min(face_size[1], blur_filter_size[1])
+        blur_filter_size[0] = int(min(face_size[0], blur_filter_size[0]))
+        blur_filter_size[1] = int(min(face_size[1], blur_filter_size[1]))
         #ぼかしサイズが小さ過ぎる場合1に補正
-        blur_filter_size[0] = max(1, blur_filter_size[0])
-        blur_filter_size[1] = max(1, blur_filter_size[1])
+        blur_filter_size[0] = int(max(1, blur_filter_size[0]))
+        blur_filter_size[1] = int(max(1, blur_filter_size[1]))
         return blur_filter_size
 
     #顔検出 検出した顔の数を返す

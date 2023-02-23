@@ -1,15 +1,16 @@
 import styled from './input.module.scss';
-import React, { useState } from 'react';
+import Link from "next/link";
+import React, { useState, useRef } from 'react';
 import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack} from "@chakra-ui/react";
-// import {Select, MultiValue} from 'chakra-react-select';
+import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner} from "@chakra-ui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { maxWidth } from '@mui/system';
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import theme from "./theme";
+import { FaFacebook} from 'react-icons/fa';
+import Layout from '../components/Layout'
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -31,6 +32,8 @@ export default function MainPage() {
 	const [adapt, setAdapt] = useState<OptionAdapt[]>([{value: '1', label: '1'},{value: '2', label: '2'}]);
 	const [person, setPerson] = useState<string>(',');
   const [showTooltip, setShowTooltip] = React.useState(false);
+	const [loading, setLoading] = useState<boolean>();
+	const [loading2, setLoading2] = useState<boolean>();
 
 	const option_type = [
 		{value: '1', label: 'mosaic'},
@@ -42,8 +45,8 @@ export default function MainPage() {
 			setPhoto('/face_image1.jpeg');
 			return;
 		}
+		setLoading(true);
     // React.ChangeEvent<HTMLInputElement>よりファイルを取得
-		console.log("送信");
     const fileObject = e.target.files[0];
 		const formData = new FormData();
 		formData.append('image', fileObject);
@@ -70,15 +73,13 @@ export default function MainPage() {
 			}
 		}
     // オブジェクトURLを生成し、profileImageを更新
-    setPhoto(photosrc);
+    setPhoto(photosrc); 
+		setLoading(false);
   }
 
   const onClickChangePhoto = async() => {
-    // const newPhotos = profileImage;
+		setLoading2(true);
     const formData = new FormData();
-     //クリックで画像を表示する
-    // setPhoto(newPhotos);
-    
 		//クリックと同時に画像をバックエンドに送信
 		let input_image = document.getElementById("image") as HTMLInputElement;
 		if (input_image instanceof HTMLInputElement && input_image.files) {
@@ -97,17 +98,18 @@ export default function MainPage() {
           },
         }
       )
+			onClickApi();
+			setLoading2(false);
   }
 	const onClickApi = async() => {
+		try {
 		let res = await fetch("http://127.0.0.1:8000/mosaics/");
 		let users = await res.json();
 		let photosrc = "http://127.0.0.1:8000" + users["result"];
-		let image_src = document.getElementById("image01");
+		// let image_src = document.getElementById("image01");
 		setResultPhoto(photosrc);
-		// if (image_src instanceof HTMLImageElement){
-		// 	image_src.src = photosrc;
-		// }
-	}
+	} catch (err) { console.log('error'); }
+	};
 
 	const onChangeType = (value: string) => {
     const param_type: string = value;
@@ -127,156 +129,215 @@ export default function MainPage() {
 			setPerson(`${adapt_text}`);
 		});
 	}
+	const inputRef = useRef(null);
+	const fileUpload = () => {
+    console.log(inputRef.current);
+    inputRef.current.click();
+  };
+
+	const onClickDownload = async(): Promise<File> => {
+		let res = await fetch("http://127.0.0.1:8000/mosaics/");
+		let users = await res.json();
+		let photosrc = "http://127.0.0.1:8000" + users["result"];
+		const blob = await (await fetch(photosrc)).blob();
+		const objectURL = URL.createObjectURL(blob); 
+		const a = document.createElement("a");
+		document.body.appendChild(a);
+		a.download = 'sample.jpg';
+		a.href = objectURL;
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(objectURL);
+		return ;
+	}
+	const config = {
+    via: 'kara_d',
+    size: 32
+}
+
+interface SocialProps {
+    url: string
+    title: string
+    size?: number
+    via?: string
+}
 	
   return (
 	<>
-	<Box
-    bg="teal.400"
-    opacity="0.9"
-    color="#ffff"
-    h={20}
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-  ><Text fontSize={40} fontFamily="Roboto" fontWeight="bold"
-	>FaMo</Text>
-	<FontAwesomeIcon icon={faGithub} />
-	</Box>
-		<Flex bg="blackAlpha.50">
-				<Box bg="white" mt="2%" ml="3%" mr="3%" borderWidth='3px' width="44%" height="670px" shadow="md" rounded="md" borderColor="teal.400">
-					<Box width="100%" height="90px">
-						<Center>
-							<Heading p="5px" color="teal.400">画像を選ぶ</Heading>
-						</Center>
-						<input type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange} className={styled.InputField} />
+	<ChakraProvider theme={theme}>
+		<Layout> </Layout>
+		<Flex>
+				<Box bg="white" mt="10px" ml="3%" mr="3%" width="44%" height="690px" rounded="md" borderColor="blackAlpha.50">
+					<Box w="200px">
+						<VStack>
+							<Text color="blackAlpha.600" fontSize="30px">アップロード</Text>
+							<Divider w="80px" borderColor="gray" opacity="1"/>
+						</VStack>
 					</Box>
-					<Box width="100%" position="relative" height="360px" borderWidth="1px">
-						<Center>
+						<Box width="150px" height="40px" m="8px">
+							<Button onClick={fileUpload}><FontAwesomeIcon icon={faPlus}/>アップロード</Button>
+							<input hidden ref={inputRef} type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange}/>
+						</Box>
+					<Box width="100%" position="relative" height="300px">
+							{loading && (
+								<Center h="100%">
+									<Spinner thickness="5px" speed="0.65s" emptyColor="gray.200" color="teal.500" size="xl"/>
+								</Center>
+							)}
+							{!loading && (
 							<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
-						</Center>
+							)}
 					</Box>
-					<Box width="100%" height="220px" shadow="md" rounded="md">
+					<Box width="100%" height="300px" rounded="md">
+						<Center>
+							<Divider w="80%" borderColor="gray" opacity="1" p="1"/>
+						</Center>
 						<Tabs variant='soft-rounded' colorScheme='green' onChange={(e) => onChangeType(String(e))}>
-							<Center p="2">
+							<Center pt="2">
 								<TabList>
-									<Tab>モザイク</Tab>
-									<Tab>ぼかし</Tab>
-									<Tab>スタンプ</Tab>
+									<Tab fontSize="13px">モザイク</Tab>
+									<Tab fontSize="13px">ぼかし</Tab>
+									<Tab fontSize="13px">スタンプ</Tab>
 								</TabList>
 							</Center>
 							<TabPanels>
 								<TabPanel>
-									<VStack spacing="3%" align='stretch'>
-										<HStack spacing={2}>
-											<Box w="20%">
-												<Text as='b' color="teal.400">モザイク強度</Text>
-											</Box>
-											<Box w="80%">
-												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-													<SliderMark value={0.15} mt='1' ml='-2.5' fontSize='sm'>低</SliderMark>
-													<SliderMark value={0.5} mt='1' ml='-2.5' fontSize='sm'>中</SliderMark>
-													<SliderMark value={0.95} mt='1' ml='-2.5' fontSize='sm'>高</SliderMark>
-													<SliderTrack>
-														<SliderFilledTrack />
-													</SliderTrack>
-													<Tooltip hasArrow bg='teal.400' color='white' placement='top' isOpen={showTooltip}>
-														<SliderThumb />
-													</Tooltip>
-												</Slider>
-											</Box>
+									<VStack spacing="3%" align='stretch' w="100%">
+										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
+										<Center>
+										<HStack spacing={2} w="80%">
+											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
+												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
+												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
+												<SliderTrack>
+													<SliderFilledTrack />
+												</SliderTrack>
+												<Tooltip hasArrow bg='teal.400' color='white' placement='top' isOpen={showTooltip}>
+													<SliderThumb />
+												</Tooltip>
+											</Slider>
 										</HStack>
-										<HStack spacing={2}>
-											<Box w="20%">
-												<Text as='b' color="teal.400">加工しない人</Text>
-											</Box>
-											<Box w="80%">
-												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-											</Box>
-										</HStack>
-										<Box w="25%">
-											<Button colorScheme='red' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
-										</Box>
+										</Center>
+											<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
+											<Center>
+												<Box w="80%">
+													<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+												</Box>
+											</Center>
+										<Center w="25%" pl="10%">
+											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+										</Center>
 								</VStack>
 								</TabPanel>
 								<TabPanel>
-								<VStack spacing="3%" align='stretch'>
-										<HStack spacing={2}>
-											<Box w="20%">
-												<Text as='b' color="teal.400">ぼかし強度</Text>
-											</Box>
-											<Box w="80%">
-												<Slider id='slider' step={0.1} defaultValue={1} min={0.1} max={1} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-													<SliderMark value={0.15} mt='1' ml='-2.5' fontSize='sm'>低</SliderMark>
-													<SliderMark value={0.5} mt='1' ml='-2.5' fontSize='sm'>中</SliderMark>
-													<SliderMark value={0.95} mt='1' ml='-2.5' fontSize='sm'>高</SliderMark>
-													<SliderTrack>
-														<SliderFilledTrack />
-													</SliderTrack>
-													<Tooltip hasArrow bg='teal.500' color='white' placement='top' isOpen={showTooltip}>
-														<SliderThumb />
-													</Tooltip>
-												</Slider>
-											</Box>
+								<VStack spacing="3%" align='stretch' w="100%">
+								<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
+									<Center>
+										<HStack spacing={2} w="80%">
+											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
+												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
+												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
+												<SliderTrack>
+													<SliderFilledTrack />
+												</SliderTrack>
+												<Tooltip hasArrow bg='teal.400' color='white' placement='top' isOpen={showTooltip}>
+													<SliderThumb />
+												</Tooltip>
+											</Slider>
 										</HStack>
-										<HStack spacing={2}>
-											<Box w="20%">
-												<Text as='b' color="teal.400">加工しない人</Text>
-											</Box>
+										</Center>
+									<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
+									<Center>
+										<Box w="80%">
+											<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+										</Box>
+									</Center>
+									<Center w="25%" pl="10%">
+										<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
+									</Center>
+									</VStack>
+									</TabPanel>
+									<TabPanel>
+										<VStack spacing="3%" align='stretch' w="100%">
+										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
+										<Center>
 											<Box w="80%">
 												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 											</Box>
-										</HStack>
-										<Box w="25%">
+										</Center>
+										<Center w="25%" pl="10%">
 											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
-										</Box>
-								</VStack>
-								</TabPanel>
-								<TabPanel>
-								<VStack spacing="3%" align='stretch'>
-									<HStack spacing={2}>
-											<Box w="20%">
-												<Text as='b' color="teal.400">加工しない人</Text>
-											</Box>
-											<Box w="80%">
-												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
-											</Box>
-										</HStack>
-										<Box w="25%">
-											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
-										</Box>
-								</VStack>
+										</Center>
+										</VStack>
 								</TabPanel>
 							</TabPanels>
 						</Tabs>
 					</Box>
 				</Box>
-			<Box mt="2%" ml="3%" mr="3%" borderWidth='1px' width="44%" height="670px" shadow="md" rounded="md">
-				<Box width="100%" height="90px" shadow="md" rounded="md">
-					<Center>
-						<Heading p="5px" color="teal.400">加工を確認する</Heading>
+			<Box bg="white" mt="10px" ml="3%" mr="3%" width="44%" height="690px" rounded="md" borderColor="blackAlpha.50">
+				<Box w="200px">
+						<VStack>
+							<Text color="blackAlpha.600" fontSize="30px">ダウンロード</Text>
+							<Divider w="80px" borderColor="gray" opacity="1"/>
+						</VStack>
+				</Box>
+				<Box width="100%" position="relative" height="300px" mt="56px" rounded="md">
+					<Center h="100%">
+						{loading2 && (
+								<Center>
+									<Spinner thickness="5px" speed="0.65s" emptyColor="gray.200" color="teal.500" size="xl"/>
+								</Center>
+							)}:{!loading2 && (
+								<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+							)}
 					</Center>
 				</Box>
-				<Box width="100%" position="relative" height="360px" shadow="md" rounded="md">
-					<Center w="50%" bg='tomato'>
-						<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
-					</Center>
-				</Box>
-				<Box width="100%" height="200px" shadow="md" rounded="md">
-					<Center color='black'>
-						<Box w="50%">
-							<Center>
-								<Button colorScheme='red' variant='solid' onClick={onClickApi}>画像を表示する</Button>
-							</Center>
-						</Box>
-						<Box w="50%">
-							<Center p="5">
-								<Button colorScheme='red' variant='solid' onClick={onClickApi}>保存</Button>
-							</Center>
-						</Box>
-					</Center>
+				<Center>
+					<Divider w="80%" borderColor="gray" opacity="1" p="1"/>
+				</Center>
+				<Center>
+					<Box width="80%" height="100px" rounded="md">
+							<Box w="50%" mt="10px">
+									<Button colorScheme='teal' variant='solid' onClick={onClickDownload}>ダウンロード</Button>
+							</Box>
+					</Box>
+				</Center>
+				<Box>
+						<VStack>
+							<Text color="blackAlpha.600" fontSize="30px">SHARE</Text>
+							<Divider w="80px" borderColor="gray" opacity="1"/>
+							<Box pt='10px'>
+								<Flex>
+									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px' color='black'> {/* twitter32px以上 */}
+										<Link href='https://twitter.com/compose/tweet'>
+											<Center h='100%' w='100%'>
+												<Image src='/Twitter.png' alt="" fill style={{ objectFit: 'contain'}}/>
+											</Center>
+										</Link>
+									</Box>
+									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px'>
+										<Link href='https://www.facebook.com/'>
+											<Center h='100%' w='100%'>
+												<FaFacebook color='#1877F2' size='50px' />
+											</Center>
+										</Link>
+									</Box>
+									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px'> {/* instagram29px以上 */}
+										<Link href='https://www.instagram.com/'>
+											<Center h='100%' w='100%'>
+												<Image src='/Instagram.png' alt="" fill style={{ objectFit: 'contain'}}/>
+											</Center>
+										</Link>
+									</Box>
+								</Flex>
+							</Box>
+						</VStack>
 				</Box>
 			</Box>
 		</Flex>
+	</ChakraProvider>
 		</>
   );
 };
