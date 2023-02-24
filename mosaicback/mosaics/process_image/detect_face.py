@@ -110,14 +110,16 @@ class DetectFace() :
 
 
     #顔を囲む四角を描く（番号なし）
-    # def write_rectangle(self) :
-    #     copy_image = self.image.copy()
-    #     # file_path = self.database_path + "rect_image.jpg"
-    #     file_path = "./media/results/rect_image.jpg"
-    #     for face_area in self.detected_faces :
-    #         cv2.rectangle(copy_image, tuple(face_area[0:2]), tuple(face_area[0:2]+face_area[2:4]), (255, 255, 255), 2)
-    #     cv2.imwrite(file_path, copy_image)
-    #     return file_path
+    def write_rectangle(self) :
+        copy_image = self.image.copy()
+        # file_path = self.database_path + "rect_image.jpg"
+        file_path = "./media/results/rect_image.jpg"
+        for i, key in enumerate(self.detected_faces) :
+            identity = self.detected_faces[key]
+            facial_area = identity["facial_area"]
+            cv2.rectangle(copy_image, (facial_area[0], facial_area[1]), (facial_area[2], facial_area[3]), (255,255,255), 1)
+        cv2.imwrite(file_path, copy_image)
+        return file_path
     
     #顔を囲む四角と，顔番号を書く
     def write_rect_and_number(self) :
