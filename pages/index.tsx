@@ -4,13 +4,14 @@ import React, { useState, useRef } from 'react';
 import axios from "axios";
 import Select, { MultiValue } from 'react-select';
 import Image from 'next/image';
-import { Button, ButtonGroup } from '@chakra-ui/react';
-import { Box, Text, Flex, Center, Heading, Divider, HStack, VStack, Spacer, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner} from "@chakra-ui/react";
+import { Button} from '@chakra-ui/react';
+import { Box, Text, Flex, Center, Divider, HStack, VStack, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner} from "@chakra-ui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faImage, faFileArrowDown, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
 import theme from "./theme";
 import { FaFacebook} from 'react-icons/fa';
 import Layout from '../components/Layout'
+import { Value } from 'sass';
 
 export default function MainPage() {
   // useState()で画像のパスを保持
@@ -34,6 +35,18 @@ export default function MainPage() {
   const [showTooltip, setShowTooltip] = React.useState(false);
 	const [loading, setLoading] = useState<boolean>();
 	const [loading2, setLoading2] = useState<boolean>();
+	const [showImage, setShowImage] = useState<boolean>();
+	const [showImage2, setShowImage2] = useState<boolean>(false);
+	const inputRef = useRef<HTMLInputElement>(null);
+	const selectRef1 = useRef(null);
+	const selectRef2 = useRef(null);
+	const selectRef3 = useRef(null);
+
+	const stamp_option: OptionAdapt[] = [
+		{ value: "2", label: "/smiling_face_with_smiling_eyes_3d.png"},
+		{ value: "3", label: "/star_3d.png"},
+		{ value: "4", label: "/heart_suit_3d.png"},
+	];
 
 	const option_type = [
 		{value: '1', label: 'mosaic'},
@@ -42,10 +55,19 @@ export default function MainPage() {
 
   const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files[0]) {
-			setPhoto('/face_image1.jpeg');
+			setShowImage(false);
+			setShowImage2(false);
+			selectRef1.current.clearValue();
+			selectRef2.current.clearValue();
+			selectRef3.current.clearValue();
 			return;
 		}
+		setShowImage(true);
+		setShowImage2(false);
 		setLoading(true);
+		selectRef1.current.clearValue();
+		selectRef2.current.clearValue();
+		selectRef3.current.clearValue();
     // React.ChangeEvent<HTMLInputElement>よりファイルを取得
     const fileObject = e.target.files[0];
 		const formData = new FormData();
@@ -78,16 +100,16 @@ export default function MainPage() {
   }
 
   const onClickChangePhoto = async() => {
+		if (!inputRef.current) return;
+		selectRef1.current.clearValue();
+		selectRef2.current.clearValue();
+		selectRef3.current.clearValue();
 		setLoading2(true);
     const formData = new FormData();
 		//クリックと同時に画像をバックエンドに送信
-		let input_image = document.getElementById("image") as HTMLInputElement;
-		if (input_image instanceof HTMLInputElement && input_image.files) {
-			formData.append('image',input_image.files[0]);
-		}
+		formData.append('image',inputRef.current.files[0]);
 		formData.append('mosaic_type', String(parameter.mosaic_type));
 		formData.append('strength', String(parameter.strength));
-		console.log(person);
 		formData.append('rect_number', person);
     await axios.post(
 			'http://127.0.0.1:8000/mosaics/',
@@ -99,6 +121,7 @@ export default function MainPage() {
         }
       )
 			onClickApi();
+			setShowImage2(true);
 			setLoading2(false);
   }
 	const onClickApi = async() => {
@@ -106,7 +129,6 @@ export default function MainPage() {
 		let res = await fetch("http://127.0.0.1:8000/mosaics/");
 		let users = await res.json();
 		let photosrc = "http://127.0.0.1:8000" + users["result"];
-		// let image_src = document.getElementById("image01");
 		setResultPhoto(photosrc);
 	} catch (err) { console.log('error'); }
 	};
@@ -114,6 +136,11 @@ export default function MainPage() {
 	const onChangeType = (value: string) => {
     const param_type: string = value;
 		setParameter({...parameter, mosaic_type: String(value)});
+  }
+
+	const onChangeStamp = (e: OptionAdapt) => {
+    const param_type: string = e.value;
+		setParameter({...parameter, mosaic_type: String(e.value)});
   }
 
 	
@@ -129,9 +156,8 @@ export default function MainPage() {
 			setPerson(`${adapt_text}`);
 		});
 	}
-	const inputRef = useRef(null);
+
 	const fileUpload = () => {
-    console.log(inputRef.current);
     inputRef.current.click();
   };
 
@@ -155,12 +181,12 @@ export default function MainPage() {
     size: 32
 }
 
-interface SocialProps {
-    url: string
-    title: string
-    size?: number
-    via?: string
-}
+const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
+  <Box>
+    <Image src={option.label} alt="stamp" width={30} height={30}/>
+  </Box>
+);
+
 	
   return (
 	<>
@@ -176,16 +202,21 @@ interface SocialProps {
 					</Box>
 						<Box width="150px" height="40px" m="8px">
 							<Button onClick={fileUpload}><FontAwesomeIcon icon={faPlus}/>アップロード</Button>
-							<input hidden ref={inputRef} type="file" name="image" id="image" accept="image/*" onChange={onFileInputChange}/>
+							<input hidden ref={inputRef} type="file" name="image" accept="image/*" onChange={onFileInputChange}/>
 						</Box>
 					<Box width="100%" position="relative" height="300px">
-							{loading && (
+							{loading ? (
 								<Center h="100%">
 									<Spinner thickness="5px" speed="0.65s" emptyColor="gray.200" color="teal.500" size="xl"/>
 								</Center>
-							)}
-							{!loading && (
-							<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+							):(
+								showImage ? (
+									<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+								):(
+									<Center h="100%">
+										<FontAwesomeIcon icon={faImage} size="3x"/>
+									</Center>
+								)
 							)}
 					</Box>
 					<Box width="100%" height="300px" rounded="md">
@@ -206,7 +237,7 @@ interface SocialProps {
 										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 										<Center>
 										<HStack spacing={2} w="80%">
-											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+											<Slider step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
 												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
 												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
 												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
@@ -222,7 +253,7 @@ interface SocialProps {
 											<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
 											<Center>
 												<Box w="80%">
-													<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+													<Select instanceId="selectbox" ref={selectRef1} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 												</Box>
 											</Center>
 										<Center w="25%" pl="10%">
@@ -235,7 +266,7 @@ interface SocialProps {
 								<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 									<Center>
 										<HStack spacing={2} w="80%">
-											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+											<Slider step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
 												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
 												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
 												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
@@ -251,7 +282,7 @@ interface SocialProps {
 									<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
 									<Center>
 										<Box w="80%">
-											<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+											<Select instanceId="selectbox" ref={selectRef2} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 										</Box>
 									</Center>
 									<Center w="25%" pl="10%">
@@ -260,11 +291,17 @@ interface SocialProps {
 									</VStack>
 									</TabPanel>
 									<TabPanel>
-										<VStack spacing="3%" align='stretch' w="100%">
-										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%" pt="2">加工しない人</Text>
+										<VStack spacing="2%" align='stretch' w="100%">
+										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">種類</Text>
 										<Center>
 											<Box w="80%">
-												<Select id="selectbox" instanceId="selectbox" onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
+												<Select instanceId="selectbox" onChange={(e)=>{onChangeStamp(e)}} options={stamp_option} formatOptionLabel={(option) => (<FormatOptionLabel option={option} />)}/>
+											</Box>
+										</Center>
+										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">加工しない人</Text>
+										<Center>
+											<Box w="80%">
+												<Select instanceId="selectbox" ref={selectRef3} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 											</Box>
 										</Center>
 										<Center w="25%" pl="10%">
@@ -285,12 +322,18 @@ interface SocialProps {
 				</Box>
 				<Box width="100%" position="relative" height="300px" mt="56px" rounded="md">
 					<Center h="100%">
-						{loading2 && (
+						{loading2 ? (
 								<Center>
 									<Spinner thickness="5px" speed="0.65s" emptyColor="gray.200" color="teal.500" size="xl"/>
 								</Center>
-							)}:{!loading2 && (
-								<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+							):(
+								showImage2 ? (
+									<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+								):(
+									<Center h="100%">
+										<FontAwesomeIcon icon={faFaceSmile} size="3x"/>
+									</Center>
+								)
 							)}
 					</Center>
 				</Box>
@@ -300,7 +343,11 @@ interface SocialProps {
 				<Center>
 					<Box width="80%" height="100px" rounded="md">
 							<Box w="50%" mt="10px">
-									<Button colorScheme='teal' variant='solid' onClick={onClickDownload}>ダウンロード</Button>
+								{showImage2 ? (
+									<Button colorScheme='teal' variant='solid' onClick={onClickDownload}><FontAwesomeIcon icon={faFileArrowDown}/><Text m="3px">ダウンロード</Text></Button>
+								):(
+									<Box></Box>
+								)}
 							</Box>
 					</Box>
 				</Center>
@@ -313,7 +360,7 @@ interface SocialProps {
 									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px' color='black'> {/* twitter32px以上 */}
 										<Link href='https://twitter.com/compose/tweet'>
 											<Center h='100%' w='100%'>
-												<Image src='/Twitter.png' alt="" fill style={{ objectFit: 'contain'}}/>
+												<Image src='/Twitter.png' alt="" width={100} height={100}/>
 											</Center>
 										</Link>
 									</Box>
@@ -327,14 +374,14 @@ interface SocialProps {
 									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px'> {/* instagram29px以上 */}
 										<Link href='https://www.instagram.com/'>
 											<Center h='100%' w='100%'>
-												<Image src='/Instagram.png' alt="" fill style={{ objectFit: 'contain'}}/>
+												<Image src='/Instagram.png' alt="" width={100} height={100}/>
 											</Center>
 										</Link>
 									</Box>
 									<Box position="relative" w='50px' h="50px" mr='10px' ml='10px'> {/* instagram29px以上 */}
 										<Link href='https://timeline.line.me/social-plugin/share?url=&text='>
 											<Center h='100%' w='100%'>
-												<Image src='/LINE.png' alt="" fill style={{ objectFit: 'contain'}}/>
+												<Image src='/LINE.png' alt="" width={100} height={100}/>
 											</Center>
 										</Link>
 									</Box>
