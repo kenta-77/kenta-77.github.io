@@ -1,7 +1,7 @@
 import sys
 import cv2
 import numpy as np
-import detect_retina as dr
+from .detect_retina import detect_face
 
 class DetectFace() :
     """
@@ -87,7 +87,7 @@ class DetectFace() :
 
     #顔検出 検出した顔の数を返す
     def detect_face(self) :
-        self.detected_faces = dr.detect_face(self.database_path+self.image_file)
+        self.detected_faces = detect_face(self.database_path+self.image_file)
         if len(self.detected_faces)==0:
             print("No face detected from select image")
         else :
