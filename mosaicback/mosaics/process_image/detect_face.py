@@ -210,12 +210,12 @@ class DetectFace() :
         return file_path
 
 
-if __name__ == '__main__' :
-    detect_test = DetectFace("./mosaics/process_image/resource/", "sakana.jpg")
-    detect_test.detect_face()
-    detect_test.filter_size = 10
-    print(len(detect_test.detected_faces))
-    a = detect_test.write_rect_and_number()
-    #b = detect_test.blur_face()
-    #c = detect_test.mosaic_face()
-    d = detect_test.stamp_face("star")
+# if __name__ == '__main__' :
+#     detect_test = DetectFace("./mosaics/process_image/resource/", "sakana.jpg")
+#     detect_test.detect_face()
+#     detect_test.filter_size = 10
+#     print(len(detect_test.detected_faces))
+#     a = detect_test.write_rect_and_number()
+#     #b = detect_test.blur_face()
+#     #c = detect_test.mosaic_face()
+#     d = detect_test.stamp_face("star")
