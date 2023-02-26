@@ -48,7 +48,7 @@ def mosaic_upload(request):
         if int(mosaic.mosaic_type) == 2:
           detect_stamp = detect_test.stamp_face("smile") #検知した顔にスタンプを表示するメソッドを実行
         elif int(mosaic.mosaic_type) == 3:
-          detect_stamp = detect_test.stamp_face("star") #検知した顔にスタンプを表示するメソッドを実行
+          detect_stamp = detect_test.stamp_face("star") #検知した顔に3スタンプを表示するメソッドを実行
         elif int(mosaic.mosaic_type) == 4:
           detect_stamp = detect_test.stamp_face("heart") #検知した顔にスタンプを表示するメソッドを実行
       mosaic.result = "results/" + str(result_path) + "result.jpg" #結果画像のurlをDBに登録
