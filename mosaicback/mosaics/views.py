@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_api_key.permissions import HasAPIKey
 from .models import Mosaic
 from .serializers import MosaicSerializer
 import os
@@ -10,6 +12,7 @@ import glob
 from .process_image.detect_face import DetectFace
 
 @api_view(["GET","POST"]) #GETとPOSTメソッドを受け付ける
+@permission_classes([HasAPIKey|IsAuthenticated])
 def mosaic_upload(request):
   if request.method == "GET":
     mosaic = Mosaic.objects.latest('id')
@@ -59,6 +62,7 @@ def mosaic_upload(request):
     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 @api_view(["POST"]) #GETとPOSTメソッドを受け付ける
+@permission_classes([HasAPIKey|IsAuthenticated])
 def mosaic_rectangle(request):
   if request.method == "POST":
     serializer = MosaicSerializer(data=request.data)
