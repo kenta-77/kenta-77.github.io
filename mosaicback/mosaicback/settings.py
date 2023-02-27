@@ -18,6 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework_api_key",
     'corsheaders',
     'mosaics',
     'rest_framework',
@@ -128,6 +131,15 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:5501',
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        "rest_framework_api_key.permissions.HasAPIKey",
+    )
+}
+
+CORS_ALLOW_HEADERS = ('accept','accept-encoding','authorization','content-type','dnt','origin','user-agent','x-csrftoken','x-requested-with','access-control-allow-origin','x-api-key',)

@@ -24,9 +24,9 @@ export default function MainPage() {
 		value: string;
 		label: string;
 	}
-  const [photo, setPhoto] =useState<string>('/face_image1.jpeg');
-  const [result_photo, setResultPhoto] =useState<string>('/face_image1.jpeg');
-	const myLoader = ({ src, width, quality }) => {
+  const [photo, setPhoto] =useState<string>('');
+  const [result_photo, setResultPhoto] =useState<string>('');
+	const myLoader = ({ src }) => {
 		return `${src}`
 	}
 	const [parameter, setParameter] = useState<ParameterObject>({mosaic_type: '0', strength: '1'});
@@ -62,6 +62,8 @@ export default function MainPage() {
 			selectRef3.current.clearValue();
 			return;
 		}
+		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
+		const data = await fetch(`http://127.0.0.1:8000/mosaics/`, { headers: headers})
 		setShowImage(true);
 		setShowImage2(false);
 		setLoading(true);
@@ -79,10 +81,11 @@ export default function MainPage() {
 			{
 				headers: {
 					'Content-Type': 'multipart/form-data',
+					'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
 				},
 			}
 		)
-		const res = await fetch("http://127.0.0.1:8000/mosaics/");
+		const res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
 		const users = await res.json();
 		const photosrc = "http://127.0.0.1:8000" + users["rectangle"];
 		const active_user = users["active_number"];
@@ -94,7 +97,6 @@ export default function MainPage() {
 				setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
 			}
 		}
-    // オブジェクトURLを生成し、profileImageを更新
     setPhoto(photosrc); 
 		setLoading(false);
   }
@@ -117,6 +119,7 @@ export default function MainPage() {
         {
           headers: {
             'content-type': 'multipart/form-data',
+						'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
           },
         }
       )
@@ -125,8 +128,10 @@ export default function MainPage() {
 			setLoading2(false);
   }
 	const onClickApi = async() => {
+		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
 		try {
-		let res = await fetch("http://127.0.0.1:8000/mosaics/");
+		let res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
+		// let res = await fetch("http://127.0.0.1:8000/mosaics/", {headers: {'X-API-KEY': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}});
 		let users = await res.json();
 		let photosrc = "http://127.0.0.1:8000" + users["result"];
 		setResultPhoto(photosrc);
@@ -162,7 +167,8 @@ export default function MainPage() {
   };
 
 	const onClickDownload = async(): Promise<File> => {
-		let res = await fetch("http://127.0.0.1:8000/mosaics/");
+		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
+		let res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
 		let users = await res.json();
 		let photosrc = "http://127.0.0.1:8000" + users["result"];
 		const blob = await (await fetch(photosrc)).blob();
@@ -211,7 +217,7 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 								</Center>
 							):(
 								showImage ? (
-									<Image loader={myLoader} src={photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+									<Image loader={myLoader} src={photo} alt="input picture" unoptimized={true} fill style={{ objectFit: 'contain'}}/>
 								):(
 									<Center h="100%">
 										<FontAwesomeIcon icon={faImage} size="3x"/>
@@ -321,14 +327,20 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 						</VStack>
 				</Box>
 				<Box width="100%" position="relative" height="300px" mt="56px" rounded="md">
-					<Center h="100%">
+					<Center h="100%" position="relative">
 						{loading2 ? (
 								<Center>
 									<Spinner thickness="5px" speed="0.65s" emptyColor="gray.200" color="teal.500" size="xl"/>
 								</Center>
 							):(
 								showImage2 ? (
-									<Image loader={myLoader} src={result_photo} alt="input picture" fill style={{ objectFit: 'contain'}}/>
+									result_photo ? (
+										<Image loader={myLoader} src={result_photo} alt="input picture" unoptimized={true} fill style={{ objectFit: 'contain'}}/>
+									):(
+										<Center h="100%">
+											<FontAwesomeIcon icon={faFaceSmile} size="3x"/>
+										</Center>
+									)
 								):(
 									<Center h="100%">
 										<FontAwesomeIcon icon={faFaceSmile} size="3x"/>
