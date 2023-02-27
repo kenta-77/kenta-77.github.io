@@ -8,7 +8,7 @@ import { faHouse } from "@fortawesome/free-solid-svg-icons";
 export function Header() {
   return (
     <>
-      <Flex minWidth='max-content' alignItems='center' gap='2' bg="teal.400" opacity="0.9" color="#ffff" h="50px">
+      <Flex minWidth='max-content' alignItems='center' gap='2' bg="teal.400" opacity="0.9" color="#ffff" h="50px" w="100vw">
         <Box pl='35px' _hover={{ color: "gray.100"}}>
           <Link href='/top'>
             <Heading fontSize={38} fontWeight="bold">FaMo</Heading>
@@ -27,7 +27,7 @@ export function Header() {
         </Box>
         <Box mr='25px' position="relative" w='38px' h="38px" >
           <Link href='https://github.com/kenta-77/Mosaic_app'>
-            <Image src='/github-mark.png' alt="" fill style={{ objectFit: 'contain'}}/>
+            <Image src='/github-mark.png' alt="" width={100} height={100}/>
           </Link>
         </Box>
       </Flex>
