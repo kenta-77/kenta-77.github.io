@@ -86,6 +86,7 @@ def mosaic_rectangle(request):
       detect_write = detect_test.write_rectangle() #検知した顔の領域を表示するメソッドを実行
       mosaic.active_number = detect_test.write_rect_and_number() #検知した顔の領域を表示するメソッドを実行
       mosaic.rectangle = "rectangles/" + str(result_path) + "rect_number.jpg" #結果画像のurlをDBに登録
+      mosaic.max_strength = str(detect_test.calc_max_filter_size()) #フィルターサイズの最大値を計算
       mosaic.save() #変更内容を登録
       serializer = MosaicSerializer(mosaic) #データをシリアライズ
       return Response(serializer.data, status.HTTP_201_CREATED)

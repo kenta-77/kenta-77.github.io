@@ -34,7 +34,7 @@ export default function MainPage() {
   const [showTooltip, setShowTooltip] = React.useState(false);
 	const [loading, setLoading] = useState<boolean>();
 	const [loading2, setLoading2] = useState<boolean>();
-
+	const [max_strength, setMax_strength] = useState<string>('10');
 	const option_type = [
 		{value: '1', label: 'mosaic'},
 		{value: '2', label: 'stamp'}
@@ -64,6 +64,7 @@ export default function MainPage() {
 		const users = await res.json();
 		const photosrc = "http://127.0.0.1:8000" + users["rectangle"];
 		const active_user = users["active_number"];
+		setMax_strength(users["max_strength"])
 		for(let i = 0; i < Number(active_user); i++){
 			if(i == 0){
 				setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
@@ -206,10 +207,10 @@ interface SocialProps {
 										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 										<Center>
 										<HStack spacing={2} w="80%">
-											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
-												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
-												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
+											<Slider id='slider' step={1} defaultValue={1} min={1} max={Number(max_strength)} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+												<SliderMark value={1} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
+												<SliderMark value={Number(max_strength)/2} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
+												<SliderMark value={Number(max_strength)} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
 												<SliderTrack>
 													<SliderFilledTrack />
 												</SliderTrack>
@@ -235,10 +236,10 @@ interface SocialProps {
 								<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 									<Center>
 										<HStack spacing={2} w="80%">
-											<Slider id='slider' step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
-												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
-												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
+											<Slider id='slider' step={1} defaultValue={1} min={1} max={Number(max_strength)} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
+											<SliderMark value={1} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
+												<SliderMark value={Number(max_strength)/2} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
+												<SliderMark value={Number(max_strength)} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
 												<SliderTrack>
 													<SliderFilledTrack />
 												</SliderTrack>

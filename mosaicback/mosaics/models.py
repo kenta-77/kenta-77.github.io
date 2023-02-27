@@ -11,7 +11,7 @@ class Mosaic(models.Model):
   image = models.ImageField(null=True, blank=False, upload_to='images/')
   rectangle = models.ImageField(null=True, blank=False, upload_to='rectangles/')
   result = models.ImageField(null=True, blank=True, upload_to='results/')
-
+  max_strength = models.CharField(null=True, blank=False, max_length=100)
   def __str__(self): #画像のタイトルを返す
     return str(self.image)
 
