@@ -1,7 +1,8 @@
 import sys
 import cv2
 import numpy as np
-from .detect_retina import detect_face
+from retinaface import RetinaFace
+
 
 class DetectFace() :
     """
@@ -84,18 +85,35 @@ class DetectFace() :
         blur_filter_size[0] = int(max(1, blur_filter_size[0]))
         blur_filter_size[1] = int(max(1, blur_filter_size[1]))
         return blur_filter_size
+    
+    def int_tuple(self, t):
+        return tuple(int(x) for x in t)
+
+    def int_list(self, t):
+        return list(int(x) for x in t)
+    #retina_faceを利用した顔検出
+    def detect_face_retina(self) :
+        img_path = self.database_path+self.image_file
+        resp = RetinaFace.detect_faces(img_path, threshold = 0.5)
+
+        resp = dict(sorted(resp.items(), key=lambda x : x[1]["facial_area"]))
+        
+        for key in resp :
+            identity = resp[key]
+            landmarks = identity["landmarks"]
+            for key_place in landmarks :
+                landmarks[key_place] = self.int_list(landmarks[key_place])
+            identity["facial_area"] = self.int_list(identity["facial_area"])      
+        return resp
 
     #顔検出 検出した顔の数を返す
     def detect_face(self) :
-        self.detected_faces = detect_face(self.database_path+self.image_file)
+        self.detected_faces = self.detect_face_retina()
         if len(self.detected_faces)==0:
             print("No face detected from select image")
         else :
             self.active_faces = [True] * len(self.detected_faces)
         return len(self.detected_faces)
-
-    #retina_faceを利用した顔検出
-    
 
     #最も大きいフィルタサイズを計算する(顔領域の最も長い辺を探す)
     def calc_max_filter_size(self) :
