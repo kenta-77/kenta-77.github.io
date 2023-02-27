@@ -11,8 +11,9 @@ import os
 import glob
 from .process_image.detect_face import DetectFace
 
-@api_view(["GET","POST"]) #GETとPOSTメソッドを受け付ける
+
 @permission_classes([HasAPIKey|IsAuthenticated])
+@api_view(["GET","POST"]) #GETとPOSTメソッドを受け付ける
 def mosaic_upload(request):
   if request.method == "GET":
     mosaic = Mosaic.objects.latest('id')
@@ -61,8 +62,9 @@ def mosaic_upload(request):
       return Response(serializer.data, status.HTTP_201_CREATED)
     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-@api_view(["POST"]) #GETとPOSTメソッドを受け付ける
+
 @permission_classes([HasAPIKey|IsAuthenticated])
+@api_view(["POST"]) #GETとPOSTメソッドを受け付ける
 def mosaic_rectangle(request):
   if request.method == "POST":
     serializer = MosaicSerializer(data=request.data)

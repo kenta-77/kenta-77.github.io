@@ -8,7 +8,7 @@ import { Button} from '@chakra-ui/react';
 import { Box, Text, Flex, Center, Divider, HStack, VStack, Tab, TabList, TabPanel, TabPanels, Tabs, Slider, SliderMark, SliderThumb, Tooltip, SliderTrack, SliderFilledTrack, ChakraProvider, Spinner} from "@chakra-ui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faImage, faFileArrowDown, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
-import theme from "./theme";
+import theme from "../components/theme";
 import { FaFacebook} from 'react-icons/fa';
 import Layout from '../components/Layout'
 import { Value } from 'sass';
