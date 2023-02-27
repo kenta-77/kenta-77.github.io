@@ -35,9 +35,7 @@ export default function MainPage() {
   const [showTooltip, setShowTooltip] = React.useState(false);
 	const [loading, setLoading] = useState<boolean>();
 	const [loading2, setLoading2] = useState<boolean>();
-<<<<<<< HEAD
 	const [max_strength, setMax_strength] = useState<string>('10');
-=======
 	const [showImage, setShowImage] = useState<boolean>();
 	const [showImage2, setShowImage2] = useState<boolean>(false);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +49,6 @@ export default function MainPage() {
 		{ value: "4", label: "/heart_suit_3d.png"},
 	];
 
->>>>>>> 4fc403225aed1b5f2c0df2a27c2669759f5028c9
 	const option_type = [
 		{value: '1', label: 'mosaic'},
 		{value: '2', label: 'stamp'}
@@ -248,17 +245,10 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 										<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 										<Center>
 										<HStack spacing={2} w="80%">
-<<<<<<< HEAD
 											<Slider id='slider' step={1} defaultValue={1} min={1} max={Number(max_strength)} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
 												<SliderMark value={1} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
 												<SliderMark value={Number(max_strength)/2} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
 												<SliderMark value={Number(max_strength)} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
-=======
-											<Slider step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
-												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
-												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
->>>>>>> 4fc403225aed1b5f2c0df2a27c2669759f5028c9
 												<SliderTrack>
 													<SliderFilledTrack />
 												</SliderTrack>
@@ -284,17 +274,10 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 								<Text as='b' color="blackAlpha.600" fontSize="17px" pl="10%">強さ</Text>
 									<Center>
 										<HStack spacing={2} w="80%">
-<<<<<<< HEAD
 											<Slider id='slider' step={1} defaultValue={1} min={1} max={Number(max_strength)} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
 											<SliderMark value={1} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
 												<SliderMark value={Number(max_strength)/2} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
 												<SliderMark value={Number(max_strength)} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
-=======
-											<Slider step={1} defaultValue={50} min={1} max={100} colorScheme='teal' onChange={(e) => onChangeStrength(String(e))} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-												<SliderMark value={5} mt='1' ml='-2.5' fontSize="11px">低</SliderMark>
-												<SliderMark value={50} mt='1' ml='-2.5' fontSize="11px">中</SliderMark>
-												<SliderMark value={95} mt='1' ml='-2.5' fontSize="11px">高</SliderMark>
->>>>>>> 4fc403225aed1b5f2c0df2a27c2669759f5028c9
 												<SliderTrack>
 													<SliderFilledTrack />
 												</SliderTrack>
