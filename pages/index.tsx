@@ -54,6 +54,19 @@ export default function MainPage() {
 		{value: '2', label: 'stamp'}
 	];
 
+	const toBlob = (base64) => {
+    var bin = window.atob(base64.replace(/^.*,/, ''));
+    var buffer = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) {
+        buffer[i] = bin.charCodeAt(i);
+    }
+    // Blobを作成
+		var blob = new Blob([buffer.buffer], {
+				type: 'image/jpeg'
+		});
+    return blob;
+	}
+
   const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files[0]) {
 			setShowImage(false);
@@ -63,8 +76,6 @@ export default function MainPage() {
 			selectRef3.current.clearValue();
 			return;
 		}
-		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
-		const data = await fetch(`http://127.0.0.1:8000/mosaics/`, { headers: headers})
 		setShowImage(true);
 		setShowImage2(false);
 		setLoading(true);
@@ -76,22 +87,20 @@ export default function MainPage() {
 		const formData = new FormData();
 		formData.append('image', fileObject);
 		formData.append('strength', "1");
-		await axios.post(
+		const image_file = await axios.post(
 			'http://127.0.0.1:8000/mosaics/rectangle/',
 			formData,
 			{
 				headers: {
 					'Content-Type': 'multipart/form-data',
 					'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
-					'Access-Control-Allow-Origin': '*',
 				},
 			}
-		)
-		const res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
-		const users = await res.json();
-		const photosrc = "http://127.0.0.1:8000" + users["rectangle"];
-		const active_user = users["active_number"];
-		setMax_strength(users["max_strength"])
+			)
+		const blob = toBlob(image_file['data'].image[1]);
+		const blobUrl = URL.createObjectURL(blob);
+		const active_user = image_file['data'].active_number[0];
+		setMax_strength(image_file['data'].max_strength[0]);
 		for(let i = 0; i < Number(active_user); i++){
 			if(i == 0){
 				setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
@@ -100,7 +109,7 @@ export default function MainPage() {
 				setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
 			}
 		}
-    setPhoto(photosrc); 
+    setPhoto(blobUrl); 
 		setLoading(false);
   }
 
@@ -116,30 +125,23 @@ export default function MainPage() {
 		formData.append('mosaic_type', String(parameter.mosaic_type));
 		formData.append('strength', String(parameter.strength));
 		formData.append('rect_number', person);
-    await axios.post(
+    const image_file = await axios.post(
 			'http://127.0.0.1:8000/mosaics/',
         formData,
         {
           headers: {
             'content-type': 'multipart/form-data',
 						'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
+						'Access-Control-Allow-Origin': '*',
           },
         }
       )
-			onClickApi();
+			const blob = toBlob(image_file['data'].image[1]);
+			const blobUrl = URL.createObjectURL(blob);
+			setResultPhoto(blobUrl);
 			setShowImage2(true);
 			setLoading2(false);
   }
-	const onClickApi = async() => {
-		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
-		try {
-		let res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
-		// let res = await fetch("http://127.0.0.1:8000/mosaics/", {headers: {'X-API-KEY': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}});
-		let users = await res.json();
-		let photosrc = "http://127.0.0.1:8000" + users["result"];
-		setResultPhoto(photosrc);
-	} catch (err) { console.log('error'); }
-	};
 
 	const onChangeType = (value: string) => {
     const param_type: string = value;
@@ -170,25 +172,15 @@ export default function MainPage() {
   };
 
 	const onClickDownload = async(): Promise<File> => {
-		const headers = { 'X-Api-Key': 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg'}
-		let res = await fetch("http://127.0.0.1:8000/mosaics/", { headers: headers});
-		let users = await res.json();
-		let photosrc = "http://127.0.0.1:8000" + users["result"];
-		const blob = await (await fetch(photosrc)).blob();
-		const objectURL = URL.createObjectURL(blob); 
 		const a = document.createElement("a");
 		document.body.appendChild(a);
 		a.download = 'sample.jpg';
-		a.href = objectURL;
+		a.href = result_photo;
 		a.click();
 		a.remove();
-		URL.revokeObjectURL(objectURL);
+		URL.revokeObjectURL(result_photo);
 		return ;
 	}
-	const config = {
-    via: 'kara_d',
-    size: 32
-}
 
 const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
   <Box>
@@ -265,9 +257,11 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 													<Select instanceId="selectbox" ref={selectRef1} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 												</Box>
 											</Center>
+										{showImage && (
 										<Center w="25%" pl="10%">
 											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
 										</Center>
+										)}
 								</VStack>
 								</TabPanel>
 								<TabPanel>
@@ -294,9 +288,11 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 											<Select instanceId="selectbox" ref={selectRef2} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 										</Box>
 									</Center>
+									{showImage && (
 									<Center w="25%" pl="10%">
 										<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
 									</Center>
+									)}
 									</VStack>
 									</TabPanel>
 									<TabPanel>
@@ -313,9 +309,11 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 												<Select instanceId="selectbox" ref={selectRef3} onChange={(e)=>{onChangeNumber(e)}} options={adapt} isMulti/>
 											</Box>
 										</Center>
+										{showImage && (
 										<Center w="25%" pl="10%">
 											<Button colorScheme='teal' variant='solid' onClick={onClickChangePhoto}>加工する</Button>
 										</Center>
+										)}
 										</VStack>
 								</TabPanel>
 							</TabPanels>
