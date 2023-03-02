@@ -399,7 +399,7 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 								</Flex>
 							</Box>
 							<Box>
-								<Text size='2px' m='5px'>Copyright (c) 2019 Sefik Ilkin Serengil</Text>
+								<Text size='1px' m='10px'>Copyright (c) 2019 Sefik Ilkin Serengil</Text>
 							</Box>
 						</VStack>
 				</Box>
