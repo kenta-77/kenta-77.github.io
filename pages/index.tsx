@@ -88,7 +88,7 @@ export default function MainPage() {
 		formData.append('image', fileObject);
 		formData.append('strength', "1");
 		const image_file = await axios.post(
-			'https://mosaic-app.herokuapp.com//mosaics/rectangle/',
+			'https://mosaic-app.herokuapp.com/mosaics/rectangle/',
 			formData,
 			{
 				headers: {
