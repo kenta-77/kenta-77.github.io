@@ -95,19 +95,19 @@ export default function MainPage() {
 				},
 			}
 			)
-		const blob = toBlob(image_file['data'].image[1]);
-		const blobUrl = URL.createObjectURL(blob);
-		const active_user = image_file['data'].active_number[0];
-		setMax_strength(image_file['data'].max_strength[0]);
-		for(let i = 0; i < Number(active_user); i++){
-			if(i == 0){
-				setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
-			}
-			else{
-				setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
-			}
-		}
-    setPhoto(blobUrl); 
+		// const blob = toBlob(image_file['data'].image[1]);
+		// const blobUrl = URL.createObjectURL(blob);
+		// const active_user = image_file['data'].active_number[0];
+		// setMax_strength(image_file['data'].max_strength[0]);
+		// for(let i = 0; i < Number(active_user); i++){
+		// 	if(i == 0){
+		// 		setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
+		// 	}
+		// 	else{
+		// 		setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
+		// 	}
+		// }
+    // setPhoto(blobUrl); 
 		setLoading(false);
   }
 
