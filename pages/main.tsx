@@ -76,42 +76,42 @@ export default function MainPage() {
 		setShowImage(true);
 		setShowImage2(false);
 		setLoading(true);
-		const res = await fetch("https://mosaic-app.herokuapp.com/mosaics/rectangle/",{headers: {
-			'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
-			'Access-Control-Allow-Origin': '*',
-		}});
+		// const res = await fetch("https://mosaic-app.herokuapp.com/mosaics/rectangle/",{headers: {
+		// 	'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
+		// 	'Access-Control-Allow-Origin': '*',
+		// }});
 		selectRef1.current.clearValue();
 		selectRef2.current.clearValue();
 		selectRef3.current.clearValue();
     // React.ChangeEvent<HTMLInputElement>よりファイルを取得
-    // const fileObject = e.target.files[0];
-		// const formData = new FormData();
-		// formData.append('image', fileObject);
-		// formData.append('strength', "1");
-		// const image_file = await axios.post(
-		// 	'https://mosaic-app.herokuapp.com/mosaics/rectangle/',
-		// 	formData,
-		// 	{
-		// 		headers: {
-		// 			'Content-Type': 'multipart/form-data',
-		// 			'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
-		// 			'Access-Control-Allow-Origin': '*',
-		// 		},
-		// 	}
-		// 	)
-		// const blob = toBlob(image_file['data'].image[1]);
-		// const blobUrl = URL.createObjectURL(blob);
-		// const active_user = image_file['data'].active_number[0];
-		// setMax_strength(image_file['data'].max_strength[0]);
-		// for(let i = 0; i < Number(active_user); i++){
-		// 	if(i == 0){
-		// 		setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
-		// 	}
-		// 	else{
-		// 		setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
-		// 	}
-		// }
-    // setPhoto(blobUrl); 
+    const fileObject = e.target.files[0];
+		const formData = new FormData();
+		formData.append('image', fileObject);
+		formData.append('strength', "1");
+		const image_file = await axios.post(
+			'https://mosaic-app.herokuapp.com/mosaics/rectangle/',
+			formData,
+			{
+				headers: {
+					'Content-Type': 'multipart/form-data',
+					'X-Api-Key' : 's0J3uSMD.3Fv3RqqJYiSpdrMLorUaFGBtNMP4AqVg',
+					'Access-Control-Allow-Origin': '*',
+				},
+			}
+			)
+		const blob = toBlob(image_file['data'].image[1]);
+		const blobUrl = URL.createObjectURL(blob);
+		const active_user = image_file['data'].active_number[0];
+		setMax_strength(image_file['data'].max_strength[0]);
+		for(let i = 0; i < Number(active_user); i++){
+			if(i == 0){
+				setAdapt((adapt => [{value: `${i}`, label: `${i+1}`}]));
+			}
+			else{
+				setAdapt((adapt => [...adapt,{value: `${i}`, label: `${i+1}`}]));
+			}
+		}
+    setPhoto(blobUrl); 
 		setLoading(false);
   }
 
