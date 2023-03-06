@@ -165,6 +165,7 @@ export default function MainPage() {
 		let adapt_text: string = "";
 		e.map((selection)=>{
 			adapt_text = selection.value + "," + adapt_text;
+			console.log(adapt_text);
 			setPerson(`${adapt_text}`);
 		});
 	}
