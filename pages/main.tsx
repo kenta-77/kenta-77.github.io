@@ -117,9 +117,10 @@ export default function MainPage() {
 
   const onClickChangePhoto = async() => {
 		if (!inputRef.current) return;
-		// selectRef1.current.clearValue();
-		// selectRef2.current.clearValue();
-		// selectRef3.current.clearValue();
+		selectRef1.current.clearValue();
+		selectRef2.current.clearValue();
+		selectRef3.current.clearValue();
+		setPerson(`,`);
 		setLoading2(true);
     const formData = new FormData();
 		//クリックと同時に画像をバックエンドに送信
