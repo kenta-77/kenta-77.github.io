@@ -403,9 +403,6 @@ const FormatOptionLabel = ({ option }: { option: OptionAdapt }) => (
 									</Box>
 								</Flex>
 							</Box>
-							<Box>
-								<Text size='1px' m='10px'>Copyright (c) 2019 Sefik Ilkin Serengil</Text>
-							</Box>
 						</VStack>
 				</Box>
 			</Box>
