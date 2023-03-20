@@ -8,15 +8,15 @@ import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-   useEffect(() => {
-     const handleRouterChange = (url: any) => {
-       gtag.pageview(url);
-     };
-     router.events.on("routeChangeComplete", handleRouterChange);
-     return () => {
-       router.events.off("routeChangeComplete", handleRouterChange);
-     };
-   }, [router.events]);
+  useEffect(() => {
+    const handleRouterChange = (url: any) => {
+      gtag.pageview(url);
+    };
+    router.events.on("routeChangeComplete", handleRouterChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouterChange);
+    };
+  }, [router.events]);
 
   return (
     <ChakraProvider theme={theme}>
