@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import type { AppProps } from "next/app";
 import theme from "../components/theme";
 import Script from "next/script";
-import * as gtag from "./lib/gtag";
+import * as gtag from "../lib/gtag";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
